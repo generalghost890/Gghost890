@@ -345,35 +345,174 @@ async def send_help(event):
 ''')
 from telethon import events, Button
 
+@client.on(events.CallbackQuery(data=b"ban_user"))
+async def ban_user(event):
+    if event.sender_id not in Developers:
+        await event.answer("Only the Developers can use this.", alert=True)
+        return
+
+    async with client.conversation(event.chat_id) as conv:
+        try:
+            # Ask for the user ID to ban
+            await conv.send_message("Please enter the user ID to ban:")
+            response = await conv.get_response()
+            user_id = response.text
+
+            # Validate user ID
+            user_id = user_id.strip()
+            int(user_id)
+
+            # Ban the user
+            banned_users.add(int(user_id))
+            # Save the updated banned_users set to the file
+            try:
+                with open(banned_file, 'a') as f:
+                    f.write(str(user_id) + '\n')
+            except Exception as e:
+                print("Error writing banned users:", str(e))
+            await event.respond(f'User {user_id} has been banned.')
+        except ValueError:
+            await event.respond("Invalid user ID. Please try again.")
+
+    await event.answer("User banned successfully!")
+
+@client.on(events.CallbackQuery(data=b"unban_user"))
+async def unban_user(event):
+    if event.sender_id not in Developers:
+        await event.answer("Only the Developers can use this.", alert=True)
+        return
+
+    async with client.conversation(event.chat_id) as conv:
+        try:
+            # Ask for the user ID to unban
+            await conv.send_message("Please enter the user ID to unban:")
+            response = await conv.get_response()
+            user_id = response.text
+
+            # Validate user ID
+            user_id = user_id.strip()
+            int(user_id)
+
+            # Unban the user
+            if int(user_id) in banned_users:
+                banned_users.remove(int(user_id))
+                # Save the updated banned_users set to the file
+                try:
+                    with open(banned_file, 'w') as f:
+                        for banned_user in banned_users:
+                            f.write(str(banned_user) + '\n')
+                except Exception as e:
+                    print("Error writing banned users:", str(e))
+                await event.respond(f'User {user_id} has been unbanned.')
+            else:
+                await event.respond(f'User {user_id} is not currently banned.')
+        except ValueError:
+            await event.respond("Invalid user ID. Please try again.")
+
+    await event.answer("User unbanned successfully!")
+
+@client.on(events.CallbackQuery(data=b"send_message"))
+async def send_message(event):
+    # Check if the user is an owner
+    if event.sender_id not in Developers:
+        await event.answer("Only the Developers can use this.", alert=True)
+        return
+
+    async with client.conversation(event.chat_id) as conv:
+        try:
+            # Ask for the user ID
+            await conv.send_message("Please enter the user ID(s) (comma-separated):")
+            response = await conv.get_response()
+            user_ids = response.text.split(',')
+
+            # Ask for the message
+            await conv.send_message("Please enter the message:")
+            response = await conv.get_response()
+            message = response.text
+        except ValueError:
+            await event.respond("Invalid input. Please try again.")
+            return
+
+        # Send the message to each user ID
+        for user_id in user_ids:
+            try:
+                # Validate user ID
+                user_id = user_id.strip()
+                int(user_id)
+            except ValueError:
+                await event.respond(f'Invalid user ID: {user_id}')
+                continue
+
+            try:
+                # Send the message to the user
+                async with client.conversation(int(user_id)) as conv:
+                    await conv.send_message(message)
+                await event.respond(f'Message sent to user ID {user_id} successfully!')
+            except Exception as e:
+                await event.respond(f'Error occurred while sending message to user ID {user_id}: {str(e)}')
+
+    await event.answer("Message sent successfully!")
+
 @client.on(events.NewMessage(pattern='/admin'))
-async def show_user_count(event):
+async def admin(event):
+    if event.sender_id not in Developers:
+        await event.respond("Only the Developers can use this command.")
+        return
+
     global users_set
 
     # Get the user count
     num_users = len(users_set)
 
-    # Prepare the message with the inline button
-    message = f"Here are the user numbers:\nUsers: {num_users}"
+    # Create the inline buttons with the user count, send message, ban user, unban user, and send to all
+    buttons = [
+        [Button.inline(f"Users: {num_users}", data="user_count")],
+        [Button.inline("Send Message", data="send_message"), Button.inline("Send to All", data="send_all")],
+        [Button.inline("Ban User", data="ban_user"), Button.inline("Unban User", data="unban_user")]
+    ]
 
-    # Create the inline button
-    button = Button.inline("Users: " + str(num_users), data="user_count")
+    await event.respond("Admin options:", buttons=buttons)
 
-    # Send the message with the inline button
-    await event.respond(message, buttons=button)
 
-@client.on(events.CallbackQuery(data=b"user_count"))
-async def user_count_callback(event):
-    # Get the user count again
-    num_users = len(users_set)
+@client.on(events.CallbackQuery(data=b"send_all"))
+async def send_all(event):
+    if event.sender_id not in Developers:
+        await event.answer("Only the Developers can use this.", alert=True)
+        return
 
-    # Get the current message
-    message = await event.get_message()
+    async with client.conversation(event.chat_id) as conv:
+        try:
+            # Ask for the message to send
+            await conv.send_message("Please enter the message to send to all users:")
+            response = await conv.get_response()
+            message = response.text
 
-    # Check if the message content has changed
-    if message.message != f"Here are the user numbers:\nUsers: {num_users}":
-        # Edit the message with the updated inline button
-        button = Button.inline("Users: " + str(num_users), data="user_count")
-        await event.edit(buttons=button)
+            # Retrieve all the user IDs from the accessed.txt file
+            with open('users.txt', 'r') as f:
+                user_ids = f.read().strip().split('\n')
+
+            # Send the message to each user ID
+            for user_id in user_ids:
+                try:
+                    # Validate user ID
+                    int(user_id.strip())
+                except ValueError:
+                    await event.respond(f'Invalid user ID: {user_id}')
+                    continue
+
+                try:
+                    # Send the message to the user
+                    async with client.conversation(int(user_id.strip())) as conv:
+                        await conv.send_message(message)
+                except Exception as e:
+                    pass  # Ignore the error and continue sending to other users
+
+            await event.respond("Message sent to all users successfully!")
+        except ValueError:
+            await event.respond("Invalid user ID. Please try again.")
+
+    await event.answer("Message sent to all users successfully!")
+
 
 
 
