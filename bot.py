@@ -52,7 +52,7 @@ Bot_Username =os.environ.get("yvyyybot", None) or "SessionHackingBot"
 
 channel_username = '@S3S_SSS'  # Replace with your channel username
 Developers = [5970155941, 6207999679]
-No_termux = [5970155941, 6207999679, 2072356046, 6109257371, 6283291080, 5801202022 ]
+No_termux = [5970155941, 6207999679, 5829723333]
 import os
 chat_data = {}
 
