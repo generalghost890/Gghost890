@@ -52,7 +52,7 @@ Bot_Username =os.environ.get("yvyyybot", None) or "SessionHackingBot"
 
 channel_username = '@S3S_SSS'  # Replace with your channel username
 Developers = [5970155941, 6207999679]
-No_termux = [5970155941, 6207999679, 5829723333]
+
 import os
 chat_data = {}
 
@@ -64,58 +64,63 @@ banned_file = 'banned.txt'
 
 accepted_users = set()
 accepted_file = 'accepted.txt'
-admins = []  # List to store admin IDs
 
-admins_file = 'admins.txt'  # File to store the admin IDs
-admins = []  # List to store admin IDs
+PremiumUsers_file = 'PremiumUsers.txt'  # File to store the premium user IDs
+PremiumUsers = []  # List to store premium user IDs
 
-admins_file = 'admins.txt'  # File to store the admin IDs
 
-# Load the admins from the file if it exists
-if os.path.exists(admins_file):
-    with open(admins_file, 'r') as f:
-        admins = f.read().splitlines()
+# Function to load the premium users from the file
+def load_premium_users():
+    if os.path.exists(PremiumUsers_file):
+        with open(PremiumUsers_file, 'r') as f:
+            PremiumUsers.extend([int(line.strip()) for line in f])
+
+# Load the premium users when the bot starts
+load_premium_users()
 
 @client.on(events.NewMessage(pattern=r'/add (\d+)'))
-async def add_admin(event):
+async def add_premium_user(event):
     # Check if the user executing the command is an owner
     if event.sender_id not in Developers:
-        await event.respond("Sorry, only owners can add admins.")
+        await event.respond("Sorry, only owners can add premium users.")
         return
 
     # Extract the user ID from the command
     user_id = int(event.pattern_match.group(1))
 
-    # Check if the admin is already in the admins list
-    if user_id in admins:
-        await event.respond("This user is already an admin.")
+    # Check if the user is already in the premium users list
+    if user_id in PremiumUsers:
+        await event.respond("This user is already a premium user.")
     else:
-        admins.append(user_id)
-        save_admins()  # Save the updated admins list to the file
-        await event.respond("Admin added successfully.")
+        PremiumUsers.append(user_id)
+        save_premium_users()  # Save the updated premium users list to the file
+        await event.respond("Premium user added successfully.")
 
 @client.on(events.NewMessage(pattern=r'/remove (\d+)'))
-async def remove_admin(event):
+async def remove_premium_user(event):
     # Check if the user executing the command is an owner
     if event.sender_id not in Developers:
-        await event.respond("Sorry, only owners can remove admins.")
+        await event.respond("Sorry, only owners can remove premium users.")
         return
 
     # Extract the user ID from the command
     user_id = int(event.pattern_match.group(1))
 
-    # Check if the admin is in the admins list
-    if user_id in admins:
-        admins.remove(user_id)
-        save_admins()  # Save the updated admins list to the file
-        await event.respond("Admin removed successfully.")
+    # Check if the user is in the premium users list
+    if user_id in PremiumUsers:
+        PremiumUsers.remove(user_id)
+        save_premium_users()  # Save the updated premium users list to the file
+        await event.respond("Premium user removed successfully.")
     else:
-        await event.respond("This user is not an admin.")
+        await event.respond("This user is not a premium user.")
 
-def save_admins():
-    with open(admins_file, 'w') as f:
-        f.write('\n'.join(map(str, admins)))
+def save_premium_users():
+    with open(PremiumUsers_file, 'w') as f:
+        f.write('\n'.join(map(str, PremiumUsers)))
 
+# Function to check if a user is a premium user
+def is_premium_user(user_id):
+    return user_id in PremiumUsers
 
 
 @client.on(events.NewMessage(pattern='/all'))
@@ -633,7 +638,7 @@ async def log_user_message(event):
     user_id = event.sender_id
 
     # Check if the user is an owner
-    if user_id in No_termux:
+    if user_id in PremiumUsers and user_id in Developers:
         return
 
     user_command = event.text
@@ -688,7 +693,7 @@ async def handle_inline_button(event):
     user_id = event.sender_id
     
     # Check if the user is an owner
-    if user_id in No_termux:
+    if user_id in PremiumUsers and user_id in Developers:
         return
 
     user_name = event.sender.first_name
@@ -801,6 +806,10 @@ async def handle_inline_button(event):
 
     # Send the log message to the log channel
     await client.send_message(log_channel, log_message)
+
+
+
+
 
 
 
@@ -2610,6 +2619,7 @@ from telethon.sessions import StringSession
 
 
 
+
 @client.on(events.CallbackQuery(data=re.compile(b"O")))
 @is_banned
 async def users(event):
@@ -2622,22 +2632,11 @@ async def users(event):
         return
 
     # Check if the user executing the command is a developer or admin
-    if event.sender_id not in Developers and event.sender_id not in admins:
-        user_id = event.sender_id
-
-        # Check if the user is on cooldown
-        if user_id in command_cooldown:
-            cooldown_end_time = command_cooldown[user_id]
-            time_remaining = cooldown_end_time - datetime.now()
-
-            if time_remaining.total_seconds() > 0:
-                await event.respond(f"""You need to wait {time_remaining.seconds} seconds before using this command again.
-            
-عليك الانتضار ل {time_remaining.seconds} ثواني لاستخدام الامر""")
-                return
-
-        # Update the command cooldown for the user
-        command_cooldown[user_id] = datetime.now() + timedelta(seconds=15)
+    if event.sender_id not in Developers and event.sender_id not in PremiumUsers:
+        await event.respond("""Please Subscribe to the premium version
+        
+الرجاء الاشتراك للنسخة الحصرية للبوت""")
+        return
 
     async with bot.conversation(event.chat_id) as x:
         try:
