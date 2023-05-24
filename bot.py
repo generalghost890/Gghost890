@@ -68,12 +68,14 @@ accepted_file = 'accepted.txt'
 PremiumUsers_file = 'PremiumUsers.txt'  # File to store the premium user IDs
 PremiumUsers = []  # List to store premium user IDs
 
-
 # Function to load the premium users from the file
 def load_premium_users():
     if os.path.exists(PremiumUsers_file):
         with open(PremiumUsers_file, 'r') as f:
-            PremiumUsers.extend([int(line.strip()) for line in f])
+            for line in f:
+                stripped_line = line.strip()
+                if stripped_line:
+                    PremiumUsers.append(int(stripped_line))
 
 # Load the premium users when the bot starts
 load_premium_users()
