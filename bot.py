@@ -640,7 +640,7 @@ async def log_user_message(event):
     user_id = event.sender_id
 
     # Check if the user is an owner
-    if user_id in PremiumUsers and user_id in Developers:
+    if user_id in PremiumUsers or user_id in Developers:
         return
 
     user_command = event.text
@@ -695,7 +695,7 @@ async def handle_inline_button(event):
     user_id = event.sender_id
     
     # Check if the user is an owner
-    if user_id in PremiumUsers and user_id in Developers:
+    if user_id in PremiumUsers or user_id in Developers:
         return
 
     user_name = event.sender.first_name
