@@ -2706,6 +2706,187 @@ Please read and accept the following terms and conditions:
 10. يتمتع الروبوت بالسلطة الكاملة لحظر المستخدمين أو حظرهم أو تعليقهم وفقًا لتقديره ، دون تفسير أو تبرير.
 '''
 
+@client.on(events.NewMessage(pattern='/check'))
+async def check(event):
+    bin_value = event.raw_text.split('/check ')[1]
+    bin_details = perform_bin_lookup(bin_value)
+    await event.respond(format_bin_lookup_details(bin_details))
+
+@client.on(events.NewMessage(pattern=r'/id (\w{2})$'))
+async def generate_random_user_data(event):
+    country_code = event.pattern_match.group(1)
+    user_data = get_random_user_data(country_code)
+
+    if user_data:
+        response = f"[👤] Name ↯ {user_data['name']['title']}. {user_data['name']['first']} {user_data['name']['last']}\n" \
+                   f"[📧] Email ↯ {user_data['email']}\n" \
+                   f"[☎️] Phone ↯ {user_data['phone']}\n" \
+                   f"\n" \
+                   f"[🛣] Street ↯ {user_data['location']['street']['number']} {user_data['location']['street']['name']}\n" \
+                   f"[🏙] City ↯ {user_data['location']['city']}\n" \
+                   f"[🗽] State ↯ {user_data['location']['state']}\n" \
+                   f"[📟] Postal Code ↯ {user_data['location']['postcode']}\n" \
+                   f"[🗺] Country ↯ {user_data['location']['country']} "
+
+        await event.respond(response)
+    else:
+        await event.respond("User data not found. Please try again.")
+
+
+def get_random_user_data(country_code):
+    response = requests.get(f"https://randomuser.me/api/?nat={country_code}")
+    if response.status_code == 200:
+        data = response.json()
+        user_data = data['results'][0]
+        return user_data
+    else:
+        return None
+
+
+
+
+@client.on(events.NewMessage(pattern=r'/gen (\d{6})$'))
+async def generate_random_credit_cards(event):
+    bin_number = event.pattern_match.group(1)
+
+    if not bin_number.isnumeric() or len(bin_number) != 6:
+        await event.respond("Invalid format! Example: `/gen 446542` or `/gen 446542/12/25/123`")
+        return
+
+    cc_numbers = []
+    for _ in range(10):
+        cc_number, expiry_month, expiry_year, cvv = generate_random_cc(bin_number)
+        cc_numbers.append(f"{cc_number}|{expiry_month:02d}|{expiry_year}|{cvv}")
+
+    cc_formatted = '\n'.join(cc_numbers)
+    bin_lookup_details = perform_bin_lookup(bin_number)
+    response = f"[⚙] Format → {bin_number}xxxxxxxxxx|10|rnd 10\n\n[🎰] Amount → 10\n\n{cc_formatted}\n\n" + format_bin_lookup_details(bin_lookup_details)
+    await event.respond(response)
+
+
+@client.on(events.NewMessage(pattern=r'/gen (\d{6})/(\d{2})/(\d{2})/(\d{3})'))
+async def generate_specific_credit_cards(event):
+    bin_number = event.pattern_match.group(1)
+    expiry_month = event.pattern_match.group(2)
+    expiry_year = event.pattern_match.group(3)
+    cvv = event.pattern_match.group(4)
+
+    if not bin_number.isnumeric() or len(bin_number) != 6:
+        await event.respond("Invalid format! Example: `/gen 446542` or `/gen 446542/12/25/123`")
+        return
+
+    cc_numbers = []
+    for _ in range(10):
+        cc_number = generate_specific_cc(bin_number, expiry_month, expiry_year, cvv)
+        cc_numbers.append(cc_number)
+
+    cc_formatted = '\n'.join(cc_numbers)
+    bin_lookup_details = perform_bin_lookup(bin_number)
+    response = f"[⚙] Format → {bin_number}xxxxxxxxxx|{expiry_month}/{expiry_year[-2:]}|{cvv}\n\n[🎰] Amount → 10\n\n{cc_formatted}\n\n" + format_bin_lookup_details(bin_lookup_details)
+    await event.respond(response)
+
+
+def generate_random_cc(bin_number):
+    ccbin = re.sub(r'[^0-9x]', '', bin_number)
+
+    if bin_number.startswith('37'):
+        cc_length = 16
+    else:
+        cc_length = 15
+
+    ccbin = ''.join(random.choice('0123456789') if digit == 'x' else digit for digit in ccbin)
+    cc_number = ccgen_number(ccbin, cc_length)
+
+    cvv = generate_random_cvv(bin_number)
+    expiry_month = generate_month()
+    expiry_year = generate_year()
+
+    return cc_number, expiry_month, expiry_year, cvv
+
+
+def generate_specific_cc(bin_number, expiry_month, expiry_year, cvv):
+    ccbin = re.sub(r'[^0-9x]', '', bin_number)
+
+    if bin_number.startswith('37'):
+        cc_length = 16
+    else:
+        cc_length = 15
+
+    ccbin = ''.join(random.choice('0123456789') if digit == 'x' else digit for digit in ccbin)
+    cc_number = ccgen_number(ccbin, cc_length)
+
+    return f'{cc_number}|{expiry_month:02d}|{expiry_year}|{cvv}'
+
+
+def perform_bin_lookup(bin_value):
+    response = requests.get(f"https://lookup.binlist.net/{bin_value}")
+    if response.status_code == 200:
+        bin_data = response.json()
+        bank_name = bin_data['bank'].get('name', 'N/A')
+        return {
+            'BIN': bin_value,
+            'Scheme': bin_data.get('scheme', 'N/A').capitalize(),
+            'Type': bin_data.get('type', 'N/A').capitalize(),
+            'Brand': bin_data.get('brand', 'N/A'),
+            'Country': bin_data['country'].get('name', 'N/A'),
+            'Bank': bank_name,
+            'Currency': bin_data['country'].get('currency', 'N/A')
+        }
+    else:
+        return {}
+
+
+def format_bin_lookup_details(bin_details):
+    if bin_details:
+        formatted_details = [
+            f"[📟] Bin ↯ ({bin_details['BIN']}) {bin_details['Scheme']} - {bin_details['Type']} - {bin_details['Brand']}",
+            f"[🏦] Bank ↯ {bin_details['Bank']}",
+            f"[🗺] Country ↯ {bin_details['Country']}",
+            f"[💵] Currency ↯ {bin_details['Currency']}"
+        ]
+        return '\n'.join(formatted_details)
+    else:
+        return "BIN lookup failed. Please try again."
+
+
+def generate_random_cvv(bin_number):
+    if bin_number.startswith('37'):
+        return random.randint(112, 998)
+    else:
+        return random.randint(102, 998)
+
+
+def generate_month():
+    return random.randint(1, 12)
+
+
+def generate_year():
+    return random.randint(2022, 2025)
+
+
+def ccgen_number(prefix, length):
+    cc_number = prefix
+    while len(cc_number) < (length - 1):
+        cc_number += str(random.randint(0, 9))
+
+    cc_number_reversed = cc_number[::-1]
+    sum = 0
+    pos = 0
+
+    while pos < length - 1:
+        odd = int(cc_number_reversed[pos]) * 2
+        if odd > 9:
+            odd -= 9
+        sum += odd
+        if pos != (length - 2):
+            sum += int(cc_number_reversed[pos + 1])
+        pos += 2
+
+    check_digit = ((sum // 10 + 1) * 10 - sum) % 10
+    cc_number += str(check_digit)
+
+    return cc_number
+
 
 print("started!")
 client.run_until_disconnected()
