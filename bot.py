@@ -2710,13 +2710,29 @@ Please read and accept the following terms and conditions:
 
 @client.on(events.NewMessage(pattern='/check'))
 async def check(event):
-    bin_value = event.raw_text.split('/check ')[1]
+    message_text = event.raw_text
+    bin_value = message_text.split('/check ')[1].strip() if len(message_text.split()) > 1 else None
+
+    if not bin_value:
+        await event.respond("""Please provide a BIN value. Example: /check 123456
+        
+الرجاء ادخال البين مثال : 123456 /check""")
+        return
+
     bin_details = perform_bin_lookup(bin_value)
     await event.respond(format_bin_lookup_details(bin_details))
 
-@client.on(events.NewMessage(pattern=r'/id (\w{2})$'))
+@client.on(events.NewMessage(pattern=r'/id(\s+\w{2})?$'))
 async def generate_random_user_data(event):
-    country_code = event.pattern_match.group(1)
+    message_text = event.raw_text
+    country_code = message_text.split('/id')[1].strip() if len(message_text.split()) > 1 else None
+
+    if not country_code:
+        await event.respond("""Please provide a country code. Example: /id US
+
+الرجاء ادخال رمز الدولة مثال :/id US""")
+        return
+
     user_data = get_random_user_data(country_code)
 
     if user_data:
@@ -2732,7 +2748,9 @@ async def generate_random_user_data(event):
 
         await event.respond(response)
     else:
-        await event.respond("User data not found. Please try again.")
+        await event.respond("""User data not found. Please try again.
+        
+لم يتم ايجاد بيانات""")
 
 
 def get_random_user_data(country_code):
@@ -2747,12 +2765,14 @@ def get_random_user_data(country_code):
 
 
 
-@client.on(events.NewMessage(pattern=r'/gen (\d{6})$'))
+@client.on(events.NewMessage(pattern=r'/gen(\s+(\d{6}))?$'))
 async def generate_random_credit_cards(event):
-    bin_number = event.pattern_match.group(1)
+    bin_number = event.pattern_match.group(2)
 
-    if not bin_number.isnumeric() or len(bin_number) != 6:
-        await event.respond("Invalid format! Example: `/gen 446542` or `/gen 446542/12/25/123`")
+    if not bin_number or not bin_number.isnumeric() or len(bin_number) != 6:
+        await event.respond("""Invalid format! Example: /gen 123456 or /gen 123456/12/34/567
+
+كتابة خاطئي حاول :  123456 /gen او 123456/12/34/567 /gen""")
         return
 
     cc_numbers = []
@@ -2766,6 +2786,15 @@ async def generate_random_credit_cards(event):
     await event.respond(response)
 
 
+@client.on(events.NewMessage(pattern=r'/gen\b'))
+async def invalid_gen_format(event):
+    await event.respond("""Invalid format! Example: /gen 123456 or /gen 123456/12/34/567
+
+كتابة خاطئي حاول :  123456 /gen او 123456/12/34/567 /gen""")
+
+
+
+
 @client.on(events.NewMessage(pattern=r'/gen (\d{6})/(\d{2})/(\d{2})/(\d{3})'))
 async def generate_specific_credit_cards(event):
     bin_number = event.pattern_match.group(1)
@@ -2773,8 +2802,10 @@ async def generate_specific_credit_cards(event):
     expiry_year = event.pattern_match.group(3)
     cvv = event.pattern_match.group(4)
 
-    if not bin_number.isnumeric() or len(bin_number) != 6:
-        await event.respond("Invalid format! Example: `/gen 446542` or `/gen 446542/12/25/123`")
+    if not bin_number or not bin_number.isnumeric() or len(bin_number) != 6:
+        await event.respond("""Invalid format! Example: /gen 123456 or /gen 123456/12/34/567
+
+كتابة خاطئي حاول :  123456 /gen او 123456/12/34/567 /gen""")
         return
 
     cc_numbers = []
@@ -2848,7 +2879,9 @@ def format_bin_lookup_details(bin_details):
         ]
         return '\n'.join(formatted_details)
     else:
-        return "BIN lookup failed. Please try again."
+        return """BIN lookup failed. Please try again.
+        
+البين خاطء حاول غيره"""
 
 
 def generate_random_cvv(bin_number):
