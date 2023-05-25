@@ -6,7 +6,6 @@ import time
 from telethon import TelegramClient, events
 import requests
 import hashlib
-import requests
 import time
 import hashlib
 from telethon import TelegramClient, events
