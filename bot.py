@@ -603,10 +603,11 @@ async def hack(event):
 
 # O : تسجيل خروج الترمكس  (هاذا الامر يلغي الترمكس للابد)
 #################################
+
 لشرح كيفية عمل الترمكس والبوت شاهد : <a href="https://t.me/PrivaPact/257">فيديو تعليمي</a>
 
-القناة: @PrivaPact
-            ''', buttons=keyboard)
+Channel: @PrivaPact
+''', buttons=keyboard, parse_mode='HTML')
     else:
         await event.respond("""Please join @PrivaPact for the bot to work!
         
