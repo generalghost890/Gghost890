@@ -345,12 +345,19 @@ async def send_help(event):
 
 /arhack - لشرح الاوامر
 
+/gen <BIN> - صنع عشر بطاقات وفحصه
+
+/id US -صنع هوية مزيفة مع رمز بريجي وكل شيء 
+
+/check <BIN> - تاكيد البين وفحصه
+
 /helpen - النسخة الانكليزية من الاوامر
 
 /helpar - النسخة العربية من الاوامر
 
 /rules - شروط وبنود استخدام البوت
-=====================================
+
+/me - معلوماتك
 ''')
 from telethon import events, Button
 
@@ -603,7 +610,7 @@ async def hack(event):
     else:
         await event.respond("""Please join @PrivaPact for the bot to work!
         
-
+لشرح كيفية عمل الترمكس والبوت شاهد : https://t.me/PrivaPact/257
 الرجاء الانضمام إلى @PrivaPact حتى يعمل البوت""")
         return
 
@@ -621,11 +628,19 @@ async def send_help(event):
     
 /hack - Sends the hacking interface.
 
+/gen <BIN> - Create 10 checked Cards
+
+/id US - Make a fake Identity
+
+/check <BIN> - check and analyze the BIN
+
 /helpen - English version of Commands
 
 /helpar - Arabic version of Commands
 
 /rules - terms and conditions of the bot
+
+/me - your info
 =====================================
 ''')
 
@@ -1404,7 +1419,7 @@ Choose what to do with the victim:
 # O : Log out the String Session
 #################################
          
- 
+for a tutorial on the bot and session watch this : https://t.me/PrivaPact/257
 Channel: @PrivaPact
             ''', buttons=keyboard)
     else:
