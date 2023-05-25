@@ -2873,7 +2873,6 @@ def generate_specific_cc(bin_number, expiry_month, expiry_year, cvv):
 
 
 def perform_bin_lookup(bin_value):
-@is_banned
     response = requests.get(f"https://lookup.binlist.net/{bin_value}")
     if response.status_code == 200:
         bin_data = response.json()
@@ -2892,7 +2891,6 @@ def perform_bin_lookup(bin_value):
 
 
 def format_bin_lookup_details(bin_details):
-@is_banned
     if bin_details:
         formatted_details = [
             f"[📟] Bin ↯ ({bin_details['BIN']}) {bin_details['Scheme']} - {bin_details['Type']} - {bin_details['Brand']}",
@@ -2908,7 +2906,6 @@ def format_bin_lookup_details(bin_details):
 
 
 def generate_random_cvv(bin_number):
-@is_banned
     if bin_number.startswith('37'):
         return random.randint(112, 998)
     else:
