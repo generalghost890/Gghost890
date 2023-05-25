@@ -604,7 +604,7 @@ async def hack(event):
 # O : تسجيل خروج الترمكس  (هاذا الامر يلغي الترمكس للابد)
 #################################
 
-لشرح كيفية عمل الترمكس والبوت شاهد : [اضغط هنا]"https://t.me/PrivaPact/257"
+لشرح كيفية عمل الترمكس والبوت شاهد : [فيديو تعليمي](https://t.me/PrivaPact/257)
 
 Channel: @PrivaPact
 ''', buttons=keyboard, link_preview=False)
