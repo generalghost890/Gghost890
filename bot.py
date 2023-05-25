@@ -2841,7 +2841,6 @@ async def generate_specific_credit_cards(event):
 
 
 def generate_random_cc(bin_number):
-@is_banned
     ccbin = re.sub(r'[^0-9x]', '', bin_number)
 
     if bin_number.startswith('37'):
