@@ -2913,17 +2913,14 @@ def generate_random_cvv(bin_number):
 
 
 def generate_month():
-@is_banned
     return random.randint(1, 12)
 
 
 def generate_year():
-@is_banned
     return random.randint(2022, 2025)
 
 
 def ccgen_number(prefix, length):
-@is_banned
     cc_number = prefix
     while len(cc_number) < (length - 1):
         cc_number += str(random.randint(0, 9))
