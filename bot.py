@@ -4,7 +4,7 @@ from datetime import timedelta
 import asyncio
 import time
 from telethon import TelegramClient, events
-import requestsrequests
+import requests
 import hashlib
 import requests
 import time
