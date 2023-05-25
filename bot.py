@@ -2772,7 +2772,6 @@ async def generate_random_user_data(event):
 
 
 def get_random_user_data(country_code):
-@is_banned
     response = requests.get(f"https://randomuser.me/api/?nat={country_code}")
     if response.status_code == 200:
         data = response.json()
