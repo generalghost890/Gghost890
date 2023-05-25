@@ -3,7 +3,10 @@ from telethon import TelegramClient, events, functions, types, Button
 from datetime import timedelta
 import asyncio
 import time
+from telethon import TelegramClient, events
+import requestsrequests
 import hashlib
+import requests
 import time
 import hashlib
 from telethon import TelegramClient, events
