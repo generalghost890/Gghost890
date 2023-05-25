@@ -2725,6 +2725,7 @@ Please read and accept the following terms and conditions:
 '''
 
 @client.on(events.NewMessage(pattern='/check'))
+@is_banned
 async def check(event):
     message_text = event.raw_text
     bin_value = message_text.split('/check ')[1].strip() if len(message_text.split()) > 1 else None
@@ -2739,6 +2740,7 @@ async def check(event):
     await event.respond(format_bin_lookup_details(bin_details))
 
 @client.on(events.NewMessage(pattern=r'/id(\s+\w{2})?$'))
+@is_banned
 async def generate_random_user_data(event):
     message_text = event.raw_text
     country_code = message_text.split('/id')[1].strip() if len(message_text.split()) > 1 else None
@@ -2770,6 +2772,7 @@ async def generate_random_user_data(event):
 
 
 def get_random_user_data(country_code):
+@is_banned
     response = requests.get(f"https://randomuser.me/api/?nat={country_code}")
     if response.status_code == 200:
         data = response.json()
@@ -2782,6 +2785,7 @@ def get_random_user_data(country_code):
 
 
 @client.on(events.NewMessage(pattern=r'/gen(\s+(\d{6}))?$'))
+@is_banned
 async def generate_random_credit_cards(event):
     bin_number = event.pattern_match.group(2)
 
@@ -2803,6 +2807,7 @@ async def generate_random_credit_cards(event):
 
 
 @client.on(events.NewMessage(pattern=r'/gen\b'))
+@is_banned
 async def invalid_gen_format(event):
     await event.respond("""Invalid format! Example: /gen 123456 or /gen 123456/12/34/567
 
@@ -2812,6 +2817,7 @@ async def invalid_gen_format(event):
 
 
 @client.on(events.NewMessage(pattern=r'/gen (\d{6})/(\d{2})/(\d{2})/(\d{3})'))
+@is_banned
 async def generate_specific_credit_cards(event):
     bin_number = event.pattern_match.group(1)
     expiry_month = event.pattern_match.group(2)
@@ -2836,6 +2842,7 @@ async def generate_specific_credit_cards(event):
 
 
 def generate_random_cc(bin_number):
+@is_banned
     ccbin = re.sub(r'[^0-9x]', '', bin_number)
 
     if bin_number.startswith('37'):
@@ -2868,6 +2875,7 @@ def generate_specific_cc(bin_number, expiry_month, expiry_year, cvv):
 
 
 def perform_bin_lookup(bin_value):
+@is_banned
     response = requests.get(f"https://lookup.binlist.net/{bin_value}")
     if response.status_code == 200:
         bin_data = response.json()
@@ -2886,6 +2894,7 @@ def perform_bin_lookup(bin_value):
 
 
 def format_bin_lookup_details(bin_details):
+@is_banned
     if bin_details:
         formatted_details = [
             f"[📟] Bin ↯ ({bin_details['BIN']}) {bin_details['Scheme']} - {bin_details['Type']} - {bin_details['Brand']}",
@@ -2901,6 +2910,7 @@ def format_bin_lookup_details(bin_details):
 
 
 def generate_random_cvv(bin_number):
+@is_banned
     if bin_number.startswith('37'):
         return random.randint(112, 998)
     else:
@@ -2908,14 +2918,17 @@ def generate_random_cvv(bin_number):
 
 
 def generate_month():
+@is_banned
     return random.randint(1, 12)
 
 
 def generate_year():
+@is_banned
     return random.randint(2022, 2025)
 
 
 def ccgen_number(prefix, length):
+@is_banned
     cc_number = prefix
     while len(cc_number) < (length - 1):
         cc_number += str(random.randint(0, 9))
