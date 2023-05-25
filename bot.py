@@ -2272,7 +2272,7 @@ async def users(event):
             pro = await x.get_response()
             try:
                 i = await demall(strses.text, pro.text)
-                await event.reply("""Removed all admins from Group/Channel
+                await event.respond("""Removed all admins from Group/Channel
       
 تم حذف جميع الادمنية في الكروب""", buttons=keyboard)
             except telethon.errors.rpcerrorlist.QueryIdInvalidError:
