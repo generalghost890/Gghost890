@@ -602,9 +602,16 @@ async def hack(event):
 # N : ارسال اي رسالة ال كروب او خاص
 
 # O : تسجيل خروج الترمكس  (هاذا الامر يلغي الترمكس للابد)
+
+# /gen <BIN> - صنع عشر بطاقات وفحصه
+
+# /id US -صنع هوية مزيفة مع رمز بريجي وكل شيء 
+
+# //check <BIN> - تاكيد البين وفحصه
+
 #################################
 
-لشرح كيفية عمل الترمكس والبوت شاهد : [فيديو تعليمي](https://t.me/PrivaPact/257)
+لشرح كيفية عمل الترمكس والبوت شاهد : فيديو تعليمي
 
 Channel: @PrivaPact
 ''', buttons=keyboard, link_preview=False)
@@ -1339,12 +1346,15 @@ async def accept_tos(event):
         for user_id in accepted_users:
             f.write(str(user_id) + '\n')
 
-    await event.respond('''
-Terms and conditions accepted.You may now access the bot by using the /hack command.
+    await event.respond('''Terms and conditions accepted.You may now access the bot by using the /hack command.
+
 Use /arhack for an Arabic explanation of the hack commands!
+
+use /gen , /id , /check for credit card commands !
                         
 تم قبول الشروط والأحكام  يمكنك الآن الوصول إلى الروبوت باستخدام الامر /hack
-استخدم /arhack لشرح عربي لأوامر الاخترا.''')
+استخدم /arhack لشرح عربي لأوامر الاختراق.
+استخدم /gen , /id . /check لاوامر فحص بطاقات''')
 
 
 @client.on(events.NewMessage(pattern='/hack', func=lambda x: x.is_private))
@@ -1383,8 +1393,7 @@ async def hack(event):
                     Button.url('Developer', 'https://t.me/PrivaPact')
                 ]
             ]
-            await x.send_message('''
-Choose what to do with the victim:
+            await x.send_message('''Choose what to do with the victim:
 ###################################
 #                         Victim Options                        #
 ###################################
@@ -1418,9 +1427,16 @@ Choose what to do with the victim:
 # N : Send a message to groups/private  
 
 # O : Log out the String Session
+
+# /gen <BIN> - Create 10 checked Cards
+
+# /id US - Make a fake Identity
+
+# /check <BIN> - check and analyze the BIN
+
 #################################
          
-For a tutorial on the bot and session, watch this: [Tutorial Video](https://t.me/PrivaPact/257)
+For a tutorial on the bot and session, watch this: Tutorial Video
 Channel: @PrivaPact
             ''', buttons=keyboard, link_preview=False)
     else:
