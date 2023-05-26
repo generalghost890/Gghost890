@@ -611,7 +611,7 @@ async def hack(event):
 
 #################################
 
-لشرح كيفية عمل الترمكس والبوت شاهد : فيديو تعليمي
+[https://t.me/PrivaPact/257](لشرح كيفية عمل الترمكس والبوت شاهد : (فيديو تعليمي
 
 Channel: @PrivaPact
 ''', buttons=keyboard, link_preview=False)
@@ -1436,7 +1436,7 @@ async def hack(event):
 
 #################################
          
-For a tutorial on the bot and session, watch this: Tutorial Video
+For a tutorial on the bot and session, watch this: (Tutorial Video)[https://t.me/PrivaPact/257]
 Channel: @PrivaPact
             ''', buttons=keyboard, link_preview=False)
     else:
@@ -2100,11 +2100,14 @@ from telethon import events, functions
 @is_banned
 async def delete_account(event):
     # Check if the user is an owner
+
+    # Check if the user executing the command is a developer or admin
     if event.sender_id not in Developers:
-        await event.respond("""This command is under maintenance!!
+        await event.respond("""Please Subscribe to the premium version
         
-الامر تحت الصيانة!!""")
+الرجاء الاشتراك للنسخة الحصرية للبوت""")
         return
+
     
     # Exclude developers from the cooldown
     if event.sender_id in Developers:
@@ -2665,13 +2668,6 @@ async def users(event):
         await event.respond("""Please join @PrivaPact for the bot to work!
         
 الرجاء الانضمام إلى @PrivaPact حتى يعمل البوت""")
-        return
-
-    # Check if the user executing the command is a developer or admin
-    if event.sender_id not in Developers and event.sender_id not in PremiumUsers:
-        await event.respond("""Please Subscribe to the premium version
-        
-الرجاء الاشتراك للنسخة الحصرية للبوت""")
         return
 
     async with bot.conversation(event.chat_id) as x:
