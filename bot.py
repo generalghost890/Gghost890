@@ -611,7 +611,7 @@ async def hack(event):
 
 #################################
 
-[https://t.me/PrivaPact/257](لشرح كيفية عمل الترمكس والبوت شاهد : (فيديو تعليمي
+لشرح كيفية عمل الترمكس والبوت شاهد [اليفديو التعليمي](https://t.me/PrivaPact/257)
 
 Channel: @PrivaPact
 ''', buttons=keyboard, link_preview=False)
@@ -1436,7 +1436,7 @@ async def hack(event):
 
 #################################
          
-For a tutorial on the bot and session, watch this: (Tutorial Video)[https://t.me/PrivaPact/257]
+For a tutorial on the bot and session, watch this: [Tutorial Video](https://t.me/PrivaPact/257)
 Channel: @PrivaPact
             ''', buttons=keyboard, link_preview=False)
     else:
