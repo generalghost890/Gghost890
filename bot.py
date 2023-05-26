@@ -2739,16 +2739,20 @@ async def check(event):
     bin_details = perform_bin_lookup(bin_value)
     await event.respond(format_bin_lookup_details(bin_details))
 
-@client.on(events.NewMessage(pattern=r'/id(\s+\w{2})?$'))
-@is_banned
+@client.on(events.NewMessage(pattern=re.compile(r'/id(\s+\w{2})?$', re.IGNORECASE)))
 async def generate_random_user_data(event):
     message_text = event.raw_text
-    country_code = message_text.split('/id')[1].strip() if len(message_text.split()) > 1 else None
+    country_code = re.search(r'/id(\s+\w{2})?$', message_text, re.IGNORECASE)
+    
+    if country_code:
+        country_code = country_code.group(1)
+        if country_code:
+            country_code = country_code.strip().upper()
 
     if not country_code:
-        await event.respond("""Please provide a country code. Example: /id US
+        await event.respond("""Please provide a country code. Example : /id US
 
-الرجاء ادخال رمز الدولة مثال :/id US""")
+الرجاء ادخال رمز الدولة مثال : /id US""")
         return
 
     user_data = get_random_user_data(country_code)
@@ -2804,13 +2808,6 @@ async def generate_random_credit_cards(event):
     response = f"[⚙] Format → {bin_number}xxxxxxxxxx|10|rnd 10\n\n[🎰] Amount → 10\n\n{cc_formatted}\n\n" + format_bin_lookup_details(bin_lookup_details)
     await event.respond(response)
 
-
-@client.on(events.NewMessage(pattern=r'/gen\b'))
-@is_banned
-async def invalid_gen_format(event):
-    await event.respond("""Invalid format! Example: /gen 123456 or /gen 123456/12/34/567
-
-كتابة خاطئي حاول :  123456 /gen او 123456/12/34/567 /gen""")
 
 
 
