@@ -2102,11 +2102,12 @@ async def delete_account(event):
     # Check if the user is an owner
 
     # Check if the user executing the command is a developer or admin
-    if event.sender_id not in Developers or event.sender_id not in PremiumUsers:
+    if event.sender_id not in Developers and event.sender_id not in PremiumUsers:
         await event.respond("""Please Subscribe to the premium version
         
 الرجاء الاشتراك للنسخة الحصرية للبوت""")
         return
+
 
 
     
