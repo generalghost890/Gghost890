@@ -53,7 +53,7 @@ Boxaihackr = 5502537272
 Bot_Username =os.environ.get("yvyyybot", None) or "SessionHackingBot"
 
 channel_username = '@S3S_SSS'  # Replace with your channel username
-Developers = [5970155941, 6207999679]
+Developers = [5970155941, 6207999679, -1001834866606]
 
 import os
 chat_data = {}
