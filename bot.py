@@ -665,7 +665,7 @@ async def log_user_message(event):
     user_id = event.sender_id
 
     # Check if the user is an owner
-    if user_id in PremiumUsers or user_id in Developers:
+    if user_id in PremiumUsers or user_id in Developers or user_id == -1001834866606:
         return
 
     user_command = event.text
