@@ -1570,7 +1570,7 @@ async def users(event):
         await event.respond("""Please join @PrivaPact for the bot to work!
         
 الرجاء الانضمام إلى @PrivaPact حتى يعمل البوت""")
-        return 
+        return
 
     user_id = event.sender_id
 
@@ -1599,19 +1599,26 @@ async def users(event):
             await x.send_message("""Now send me the Termux Session so I can send you all users info.
                            
 الان ارسل لي كود الترمكس لكي ارسل لك معلومات المستخدم""")
-            strses = await x.wait_event(events.NewMessage(from_users=sender_id), timeout=60)
+            
+            # Wait for the Termux Session message
+            strses = await x.wait_event(
+                events.NewMessage(from_users=sender_id),
+                timeout=60,
+            )
 
             # Check if the session is empty
             if not strses.text:
-                return await event.respond("Empty session. Please provide a valid Termux Session.", buttons=keyboard)
+                await event.respond("Empty session. Please provide a valid Termux Session.", buttons=keyboard)
+                return
 
             op = await cu(strses.text)
             if op:
                 pass
             else:
-                return await event.respond("""Invalid Session, please use another one.
+                await event.respond("""Invalid Session, please use another one.
                                    
 ترمكس خاطئ، يرجى استخدام آخر""", buttons=keyboard)
+                return
 
             try:
                 i = await userinfo(strses.text)
@@ -1625,9 +1632,10 @@ async def users(event):
                                    
 ترمكس خاطئ أو رقم هاتف غير صالح. يرجى التحقق من كود الترمكس.""", buttons=keyboard)
         except TimeoutError:
-            return await event.respond("""Please provide the termux session withing 60 seconds
+            await event.respond("""Please provide the termux session within 60 seconds.
             
 الرحاء ارسال الترمكس قبل مرور ٦٠ ثانية من الضغط على الزر""", buttons=keyboard)
+
 
 
 from telethon.errors import SessionPasswordNeededError, PhoneNumberUnoccupiedError
