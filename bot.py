@@ -1601,7 +1601,7 @@ async def users(event):
 الان ارسل لي كود الترمكس لكي ارسل لك معلومات المستخدم""")
             
             # Wait for the Termux Session message
-            strses = await x.wait_event(
+            strses = await x.get_response(
                 events.NewMessage(from_users=sender_id),
                 timeout=60,
             )
