@@ -1597,7 +1597,8 @@ async def users(event):
             await x.send_message("""Now send me the Termux Session so I can send you all users info.
                            
 الان ارسل لي كود الترمكس لكي ارسل لك معلومات المستخدم""")
-            strses = await x.get_response()
+            strses = await x.wait_event(events.NewMessage, timeout=60)
+
 
             # Check if the session is empty
             if not strses.text:
