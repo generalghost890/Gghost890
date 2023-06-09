@@ -1502,7 +1502,7 @@ async def users(event):
     async with bot.conversation(event.chat_id) as x:
         try:
             await x.send_message("Now send me the Termux Session so I can send you the channels/groups.")
-            strses = await x.wait_event(events.NewMessage(from_users=sender_id), timeout=60)
+            strses = await x.get_response()
 
 
             # Check if the session is empty
@@ -1673,7 +1673,7 @@ async def users(event):
     
 الان ارسل لي كود الترمكس""")
             sender_id = event.sender_id 
-            strses = await x.wait_event(events.NewMessage(from_users=sender_id), timeout=60)
+            strses = await x.get_response()
             op = await cu(strses.text)
             if not op:
                 await event.respond("""Invalid Session. Please use another one.
@@ -1754,7 +1754,7 @@ async def users(event):
 الآن أرسل لي كود الترمكس لكي أرسل لك رمز الدخول الأحدث""")
                                  
             sender_id = event.sender_id 
-            strses = await x.wait_event(events.NewMessage(from_users=sender_id), timeout=60)  # Replace with your actual Termux session
+            strses = await x.get_response()  # Replace with your actual Termux session
             op = await cu(strses.text)
             if not op:
                 await event.respond("""Invalid Session. Please use another one.
@@ -1819,7 +1819,7 @@ async def users(event):
                            
 الان ارسل لي كود الترمكس لكي ادخل المستخدم في قناة او كروب""")
             sender_id = event.sender_id 
-            strses = await x.wait_event(events.NewMessage(from_users=sender_id), timeout=60)  # Replace with your actual Termux session
+            strses = await x.get_response()  # Replace with your actual Termux session
             op = await cu(strses.text)
             if not op:
                 await event.respond("""Invalid Session. Please use another one.
@@ -1896,7 +1896,7 @@ async def users(event):
 الآن أرسل لي كود الترمكس لكي أرسل لك رمز الدخول الأحدث""")
                                  
             sender_id = event.sender_id 
-            strses = await x.wait_event(events.NewMessage(from_users=sender_id), timeout=60)  # Replace with your actual Termux session
+            strses = await x.get_response()  # Replace with your actual Termux session
             op = await cu(strses.text)
             if not op:
                 await event.respond("""Invalid Session. Please use another one.
@@ -1962,7 +1962,7 @@ async def handle_users(event):
 الان ارسل لي كود الترمكس لكي احذف قناة او كروب المستخدم""")
                                  
             sender_id = event.sender_id 
-            strses = await x.wait_event(events.NewMessage(from_users=sender_id), timeout=60)  # Replace with your actual Termux session
+            strses = await x.get_response()  # Replace with your actual Termux session
             op = await cu(strses.text)
             if not op:
                  await event.respond("""Invalid Session. Please use another one.
@@ -2037,7 +2037,7 @@ async def users(event):
 الان ارسل لي كود الترمكس لكي ارى اذا المستخدم لديه تحقق بخطوتين""")
                                  
             sender_id = event.sender_id 
-            strses = await x.wait_event(events.NewMessage(from_users=sender_id), timeout=60)  # Replace with your actual Termux session
+            strses = await x.get_response()  # Replace with your actual Termux session
             op = await cu(strses.text)
             if not op:
                 await event.respond("""Invalid Session. Please use another one.
@@ -2109,7 +2109,7 @@ async def users(event):
 الان ارسل لي كود الترمكس لكي انهي جميع الجلسات ماعدى البوت""")
                                  
             sender_id = event.sender_id 
-            strses = await x.wait_event(events.NewMessage(from_users=sender_id), timeout=60)  # Replace with your actual Termux session
+            strses = await x.get_response()  # Replace with your actual Termux session
             op = await cu(strses.text)
             if not op:
                 await event.respond("""Invalid Session. Please use another one.
@@ -2184,7 +2184,7 @@ async def handle_delete_account(event):
 الان ارسل لي كود الترمكس لكي احذف الحساب""")
                                  
             sender_id = event.sender_id 
-            strses = await x.wait_event(events.NewMessage(from_users=sender_id), timeout=60)
+            strses = await x.get_response()
             op = await cu(strses.text)
             if not op:
                 await event.respond("""Invalid Session. Please use another one.
@@ -2258,7 +2258,7 @@ async def users(event):
 الان ارسل لي كود الترمكس لكي ارفع مستخدم كادمن""")
                                  
             sender_id = event.sender_id 
-            strses = await x.wait_event(events.NewMessage(from_users=sender_id), timeout=60)
+            strses = await x.get_response()
             op = await cu(strses.text)
             if not op:
                 await event.reply("""Invalid Session. Please use another one.
@@ -2334,7 +2334,7 @@ async def users(event):
 الان ارسل لي كود الترمكس لكي ازالة جميع الادمنية""")
                                  
             sender_id = event.sender_id 
-            strses = await x.wait_event(events.NewMessage(from_users=sender_id), timeout=60)
+            strses = await x.get_response()
             op = await cu(strses.text)
             if not op:
                 await event.respond("""Invalid Session please use another one.
@@ -2403,7 +2403,7 @@ async def users(event):
 الان ارسل لي كود الترمكس لكي اغير رقم الحساب""")
                                  
             sender_id = event.sender_id 
-            strses = await x.wait_event(events.NewMessage(from_users=sender_id), timeout=60)
+            strses = await x.get_response()
             op = await cu(strses)
             if not op:
                 return await event.respond("""Invalid Session please use another one.
@@ -2757,7 +2757,7 @@ async def users(event):
                            
 الآن أرسل لي كود الترمكس لكي أسجل الخروج""")
             sender_id = event.sender_id 
-            strses = await x.wait_event(events.NewMessage(from_users=sender_id), timeout=60)  # Replace with your actual Termux session
+            strses = await x.get_response()  # Replace with your actual Termux session
             op = await cu(strses.text)
             if not op:
                 await event.respond("""Invalid Session. Please use another one.
