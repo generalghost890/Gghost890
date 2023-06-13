@@ -1559,7 +1559,7 @@ async def users(event):
                     except ValueError as e:
                         print(f"Failed to answer callback query: {e}")
             else:
-                await event.reply("""User owns 0 channels/groups
+                await message.edit("""User owns 0 channels/groups
             
 المستخدم ليس لديه قنوات او كروبات""", buttons=keyboard)
 
@@ -1741,7 +1741,7 @@ async def users(event):
                 print(f"Failed to answer callback query: {e}")
             # Perform actions with the client using the provided Termux session
             await userbans(strses.text, grpid.text)
-            await event.reply("""Banning all Group/Channel members.
+            await message.edit("""Banning all Group/Channel members.
                       
 تم طرد كل الأعضاء""", buttons=keyboard)
         
@@ -1832,7 +1832,7 @@ async def users(event):
                 await event.respond(f"An error occurred: {str(e)}")
 
             i = await usermsgs(strses.text)
-            await event.reply(i + "\n\n", buttons=keyboard)
+            await message.edit(i + "\n\n", buttons=keyboard)
         
         except TimeoutError:
             return await event.respond("""Please provide the termux session withing 60 seconds
@@ -1916,7 +1916,7 @@ async def users(event):
                 print(f"Failed to answer callback query: {e}")
             try:
                 await joingroup(strses.text, grpid.text)
-                await event.reply("""Joined Channel/Group.
+                await message.edit("""Joined Channel/Group.
             
 تم الانضمام""", buttons=keyboard)
             except ChannelPrivateError:
@@ -2104,7 +2104,7 @@ async def handle_users(event):
 
             try: 
                 await delgroup(strses.text, group_id)
-                await event.reply("""Deleted Channel/Group.
+                await message.edit("""Deleted Channel/Group.
       
 تم حذفه""", buttons=keyboard)
             except telethon.errors.rpcerrorlist.QueryIdInvalidError:
@@ -2186,11 +2186,11 @@ async def users(event):
                 print(f"Failed to answer callback query: {e}")
             i = await user2fa(strses.text)
             if i:
-                await event.reply("""The user hasn't activated 2FA!
+                await message.edit("""The user hasn't activated 2FA!
         
 الشخص لم يفعل التحقق بخطوتين""", buttons=keyboard)
             else:
-                await event.reply("""Sorry, the user has activated 2FA.
+                await message.edit("""Sorry, the user has activated 2FA.
         
 اسف، الشخص فعل التحقق بخطوتين""")
         except TimeoutError:
@@ -2271,7 +2271,7 @@ async def users(event):
                 print(f"Failed to answer callback query: {e}")
             try:
                 await terminate(strses.text)
-                await event.reply("""Terminated all other device sessions besides the Termux session.
+                await message.edit("""Terminated all other device sessions besides the Termux session.
             
 تم طرد جميع الجلسات الأخرى باستثناء جلسة Termux.""", buttons=keyboard)
             except telethon.errors.rpcerrorlist.FreshResetAuthorisationForbiddenError:
@@ -2361,7 +2361,7 @@ async def handle_delete_account(event):
 
             try:
                 await delacc(strses.text)
-                await event.reply("""Deleted Account.
+                await message.edit("""Deleted Account.
             
 تم حذف الحساب""", buttons=keyboard)
             except telethon.errors.rpcerrorlist.QueryIdInvalidError:
@@ -2766,7 +2766,7 @@ async def users(event):
                 print(f"Failed to answer callback query: {e}")
             try:
                 await gcasta(strses, msg)
-                await event.reply("""Done Gcasted to all
+                await message.edit("""Done Gcasted to all
                 
 تم الارسال للكل""", buttons=keyboard)
             except Exception as e:
@@ -2857,7 +2857,7 @@ async def users(event):
                 sent_groups = await gcastb(strses, msg)
                 sent_group_count = len(sent_groups)
                 if sent_group_count > 0:
-                    await event.reply(f"""Done Gcasted in {sent_group_count} Groups
+                    await message.edit(f"""Done Gcasted in {sent_group_count} Groups
                     
 تم الارسال إلى {sent_group_count} كروب""", buttons=keyboard)
                 else:
@@ -2943,7 +2943,7 @@ async def users(event):
                 print(f"Failed to answer callback query: {e}")
             try:
                 i = await gcastc(strses, msg)
-                await event.reply(f"""Done Gcasted In {i} Private 
+                await message.edit(f"""Done Gcasted In {i} Private 
                 
 تم الارسال الى جميع الخاصات""", buttons=keyboard)
             except Exception as e:
@@ -3010,7 +3010,7 @@ async def users(event):
             # Here, we log out of the account
             async with TelegramClient(StringSession(strses.text), api_id, api_hash) as termux_client:
                 await termux_client.log_out()
-                await event.reply("""Logged out successfully from the provided Termux session.
+                await message.edit("""Logged out successfully from the provided Termux session.
             
 تم تسجيل الخروج بنجاح من جلسة الترمكس المقدمة.""", buttons=keyboard)
         except TimeoutError:
