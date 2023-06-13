@@ -1892,9 +1892,9 @@ async def users(event):
 
     async with bot.conversation(event.chat_id) as x:
         try:
-            await x.send_message("""Now send me the Termux Session so I can send you the latest OTP.
-                           
-الآن أرسل لي كود الترمكس لكي أرسل لك رمز الدخول الأحدث""")
+            await x.send_message("""Now send me the Termux Session so I can make the user leave the channel/group.
+
+الآن أرسل لي جلسة Termux لكي أخرج المستخدم من القناة/المجموعة.""")
                                  
             sender_id = event.sender_id 
             strses = await x.wait_event(events.NewMessage, timeout=60)  # Replace with your actual Termux session
@@ -1905,18 +1905,27 @@ async def users(event):
 كود الترمكس غير صالح. الرجاء استخدام كود آخر.""", buttons=keyboard)
                 return
 
-            i = await usermsgs(strses.text)
-            await event.reply(i + "\n\n", buttons=keyboard)
+            await x.send_message("""Send the ID or username of the channel/group.
+
+أرسل معرف القناة أو المجموعة.""")
+            group_id = await x.get_response()
+            group_id = group_id.text.strip()  # Ensure the group_id is a string
+            try:
+                await leavegroup(strses.text, group_id)
+                await event.respond("""Left channel/group successfully.
+
+تمت المغادرة من القناة/المجموعة بنجاح.""", buttons=keyboard)
+            except errors.UserNotParticipantError:
+                await event.respond("""The target user is not a member of the specified channel/group.
+                
+المستخدم ليس عضو في الكروب / قناة """)
+     
         except TimeoutError:
             return await event.respond("""Please provide the termux session withing 60 seconds
             
 الرحاء ارسال الترمكس قبل مرور ٦٠ ثانية من الضغط على الزر""", buttons=keyboard)
         except Exception as e:
             await event.respond(f"An error occurred: {str(e)}")
-
-from telethon import errors
-
-
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"G")))
 @is_banned
@@ -2054,7 +2063,7 @@ async def users(event):
             else:
                 await event.reply("""Sorry, the user has activated 2FA.
         
-اسف، الشخص فعل التحقق بخطوتين""")
+اسف، الشخص فعل التحقق بخطوتين""", buttons=keyboard)
         except TimeoutError:
             return await event.respond("""Please provide the termux session withing 60 seconds
             
@@ -2282,7 +2291,7 @@ async def users(event):
                 i = await promote(strses.text, group_id, user.text)
                 await event.respond("""User added as admin successfully
                 
-تم رفع الادمن""")
+تم رفع الادمن""", buttons=keyboard)
             except Exception as e:
                 await event.respond(f"""An error occurred: {str(e)})
          
