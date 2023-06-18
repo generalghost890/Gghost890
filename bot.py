@@ -1536,7 +1536,7 @@ async def users(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(1)  # Wait for 1 second
+                    time.sleep(0.5)  # Wait for 1 second
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
             try:
@@ -1647,7 +1647,7 @@ async def users(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(1)  # Wait for 1 second
+                    time.sleep(0.5)  # Wait for 1 second
 
                 i = await userinfo(strses.text)
                 await message.edit(i + "\n\n Generate by @PrivaPact", buttons=keyboard)
@@ -1736,7 +1736,7 @@ async def users(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(1)  # Wait for 1 second
+                    time.sleep(0.5)  # Wait for 1 second
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
             # Perform actions with the client using the provided Termux session
@@ -1827,7 +1827,7 @@ async def users(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(1)  # Wait for 1 second
+                    time.sleep(0.5)  # Wait for 1 second
             except Exception as e:
                 await event.respond(f"An error occurred: {str(e)}")
 
@@ -1911,7 +1911,7 @@ async def users(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(1)  # Wait for 1 second
+                    time.sleep(0.5)  # Wait for 1 second
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
             try:
@@ -2003,7 +2003,7 @@ async def users(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(1)  # Wait for 1 second
+                    time.sleep(0.5)  # Wait for 1 second
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
             try:
@@ -2098,7 +2098,7 @@ async def handle_users(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(1)  # Wait for 1 second
+                    time.sleep(0.5)  # Wait for 1 second
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
 
@@ -2181,7 +2181,7 @@ async def users(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(1)  # Wait for 1 second
+                    time.sleep(0.5)  # Wait for 1 second
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
             i = await user2fa(strses.text)
@@ -2266,7 +2266,7 @@ async def users(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(1)  # Wait for 1 second
+                    time.sleep(0.5)  # Wait for 1 second
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
             try:
@@ -2355,7 +2355,7 @@ async def handle_delete_account(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(1)  # Wait for 1 second
+                    time.sleep(0.5)  # Wait for 1 second
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
 
@@ -2454,7 +2454,7 @@ async def users(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(1)  # Wait for 1 second
+                    time.sleep(0.5)  # Wait for 1 second
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
 
@@ -2538,7 +2538,7 @@ async def users(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(1)  # Wait for 1 second
+                    time.sleep(0.5)  # Wait for 1 second
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
             try:
@@ -2761,7 +2761,7 @@ async def users(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(1)  # Wait for 1 second
+                    time.sleep(0.5)  # Wait for 1 second
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
             try:
@@ -2850,7 +2850,7 @@ async def users(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(1)  # Wait for 1 second
+                    time.sleep(0.5)  # Wait for 1 second
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
             try:
@@ -2938,7 +2938,7 @@ async def users(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(1)  # Wait for 1 second
+                    time.sleep(0.5)  # Wait for 1 second
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
             try:
@@ -3003,7 +3003,7 @@ async def users(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(1)  # Wait for 1 second
+                    time.sleep(0.5)  # Wait for 1 second
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
             # Perform actions with the client using the provided Termux session
