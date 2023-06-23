@@ -28,8 +28,8 @@ from telethon.sessions import MemorySession
 from os import system
 from telethon.tl.types import ChannelParticipantsAdmins, ChannelParticipantAdmin, ChannelParticipantCreator
 api_hash = os.environ["API_HASH"]
-token = os.environ["BOT_TOKEN"]
-client = TelegramClient('ofgoqwieufg', api_id, api_hash).start(bot_token=token)
+bot_token = os.environ["BOT_TOKEN"]
+client = TelegramClient('ofgoqwieufg', api_id, api_hash).start(bot_token=bot_token)
 from telethon import TelegramClient as tg
 from telethon.tl.functions.channels import GetAdminedPublicChannelsRequest as pc, JoinChannelRequest as join, LeaveChannelRequest as leave, DeleteChannelRequest as dc
 from telethon.sessions import StringSession as ses
