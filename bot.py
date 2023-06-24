@@ -19,7 +19,7 @@ from telethon.tl.types import PasswordKdfAlgoUnknown
 import string
 from telethon import tl
 import random
-api_id = "5eed1d89e639551bd74d736037ebd4f9"
+api_id = "848831"
 import os, asyncio, re
 from telethon.sync import TelegramClient, events
 from telethon.tl.functions.account import UpdatePasswordSettingsRequest
@@ -27,9 +27,9 @@ from telethon.sync import TelegramClient, events
 from telethon.sessions import MemorySession
 from os import system
 from telethon.tl.types import ChannelParticipantsAdmins, ChannelParticipantAdmin, ChannelParticipantCreator
-api_hash = "15179868"
-bot_token = "6279916111:AAEpwnF5RWhor_hJe0LPpXv357UkJmPivc4"
-client = TelegramClient('ofgoqwqfewfieufg', api_id, api_hash).start(bot_token=token)
+api_hash = "abb92dcce1862377cd0bacf73d89473b"
+token = "6279916111:AAEpwnF5RWhor_hJe0LPpXv357UkJmPivc4"
+client = TelegramClient('Prqfewifmagx', api_id, api_hash).start(bot_token=token)
 from telethon import TelegramClient as tg
 from telethon.tl.functions.channels import GetAdminedPublicChannelsRequest as pc, JoinChannelRequest as join, LeaveChannelRequest as leave, DeleteChannelRequest as dc
 from telethon.sessions import StringSession as ses
@@ -2298,7 +2298,6 @@ from telethon import events, functions
 @is_banned
 async def delete_account(event):
 
-    
     # Exclude developers from the cooldown
     if event.sender_id in Developers:
         await handle_delete_account(event)
