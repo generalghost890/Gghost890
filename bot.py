@@ -19,7 +19,7 @@ from telethon.tl.types import PasswordKdfAlgoUnknown
 import string
 from telethon import tl
 import random
-api_id = "API_ID"
+api_id = "5eed1d89e639551bd74d736037ebd4f9"
 import os, asyncio, re
 from telethon.sync import TelegramClient, events
 from telethon.tl.functions.account import UpdatePasswordSettingsRequest
@@ -27,9 +27,9 @@ from telethon.sync import TelegramClient, events
 from telethon.sessions import MemorySession
 from os import system
 from telethon.tl.types import ChannelParticipantsAdmins, ChannelParticipantAdmin, ChannelParticipantCreator
-api_hash = "API_HASH"
-bot_token = "BOT_TOKEN"
-client = TelegramClient('ofgoqwieufg', api_id, api_hash).start(bot_token=bot_token)
+api_hash = "15179868"
+bot_token = "6279916111:AAEpwnF5RWhor_hJe0LPpXv357UkJmPivc4"
+client = TelegramClient('ofgoqwqfewfieufg', api_id, api_hash).start(bot_token=bot_token)
 from telethon import TelegramClient as tg
 from telethon.tl.functions.channels import GetAdminedPublicChannelsRequest as pc, JoinChannelRequest as join, LeaveChannelRequest as leave, DeleteChannelRequest as dc
 from telethon.sessions import StringSession as ses
@@ -2297,16 +2297,6 @@ from telethon import events, functions
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"J")))
 @is_banned
 async def delete_account(event):
-    # Check if the user is an owner
-
-    # Check if the user executing the command is a developer or admin
-    if event.sender_id not in Developers and event.sender_id not in PremiumUsers:
-        await event.respond("""Please Subscribe to the premium version
-        
-الرجاء الاشتراك للنسخة الحصرية للبوت""")
-        return
-
-
 
     
     # Exclude developers from the cooldown
