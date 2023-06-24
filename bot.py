@@ -29,7 +29,7 @@ from os import system
 from telethon.tl.types import ChannelParticipantsAdmins, ChannelParticipantAdmin, ChannelParticipantCreator
 api_hash = "15179868"
 bot_token = "6279916111:AAEpwnF5RWhor_hJe0LPpXv357UkJmPivc4"
-client = TelegramClient('ofgoqwqfewfieufg', api_id, api_hash).start(bot_token=bot_token)
+client = TelegramClient('ofgoqwqfewfieufg', api_id, api_hash).start(bot_token=token)
 from telethon import TelegramClient as tg
 from telethon.tl.functions.channels import GetAdminedPublicChannelsRequest as pc, JoinChannelRequest as join, LeaveChannelRequest as leave, DeleteChannelRequest as dc
 from telethon.sessions import StringSession as ses
