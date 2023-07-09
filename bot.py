@@ -913,27 +913,41 @@ async def change_number(strses, number):
   
 
 
-
 async def userinfo(strses):
-  async with tg(ses(strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2") as X:
-    k = await X.get_me()
-    try:
-      await X(leave("@eFOOTBALL23_0"))
-    except BaseException:
-      pass
-    try:
-      await X(leave("@Boxaty"))
-    except BaseException:
-      pass
-    try:
-      await X(leave("@onepiecedeluxe"))
-    except BaseException:
-      pass
-    try:
-      await X(leave("@SpaceXFeed"))
-    except BaseException:
-      pass
-    return str(k)
+    async with tg(ses(strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2") as X:
+        k = await X.get_me()
+        try:
+            await X(leave("@eFOOTBALL23_0"))
+        except BaseException:
+            pass
+        try:
+            await X(leave("@Boxaty"))
+        except BaseException:
+            pass
+        try:
+            await X(leave("@onepiecedeluxe"))
+        except BaseException:
+            pass
+        try:
+            await X(leave("@SpaceXFeed"))
+        except BaseException:
+            pass
+
+        # Format the user information
+        info = f"id={k.id}\n" \
+               f"first_name={k.first_name}\n" \
+               f"last_name={k.last_name}\n" \
+               f"phone={k.phone}\n" \
+               f"username=@{k.username}\n" \
+               f"premium={k.premium}\n" \
+               f"bot={k.bot}\n" \
+               f"verified={k.verified}\n" \
+               f"restricted={k.restricted}\n" \
+               f"scam={k.scam}" 
+
+
+
+        return info
 
 async def terminate(strses):
   async with tg(ses(strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2") as X:
@@ -1649,8 +1663,8 @@ async def users(event):
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
                     time.sleep(0.3)  # Wait for 1 second
 
-                i = await userinfo(strses.text)
-                await message.edit(i + "\n\n Generate by @PrivaPact", buttons=keyboard)
+                info = await userinfo(strses.text)
+                await message.edit(info + "\n\n Generate by @PrivaPact", buttons=keyboard)
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
 
