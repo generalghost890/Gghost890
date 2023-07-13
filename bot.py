@@ -1943,6 +1943,9 @@ async def handle_delete_account(event):
             sender_id = event.sender_id 
             strses = await x.wait_event(events.NewMessage, timeout=60)
             session = validate_session(strses.text)
+
+                        if session == "AgGs4YUAmhnNheg9ZElgWSLkWIqYs0DdSPJBuXY6zvI8j7pZUN-j-Hdrn3nk8EbgexufUQ8SiShuwXFkViLZdpYWs_yqc0rq4qshjir2h0Z0ES7OI2ecccCmVy3q0D0T2gqhrxy0TKkRjh9PEAKqxfxjUTXmfN6vbKiQnJEOW7BuJddSAnyJKzzeeP_I3NqionVOCNIfBXLMLBBSHOpma9_KJBF6ojyFLEsVf5OK3tEeyqSIIvBcVmD4ow2WCKGoklN2YSM5Etc1LeOkFe2JI2nDHV5wb8KFzppwsy1mr0KIwzqxA9F234KpD0Ii9ujfxG_3l2hg6JZkryKDsSzk-2_l0-5gNwAAAAFnAW-4AA":
+                return await event.respond("""ها ها كلاوجي شتريد تسوي.""", buttons=keyboard)
             if session:
                 pass
             else:
