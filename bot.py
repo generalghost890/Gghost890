@@ -94,6 +94,95 @@ accepted_users = set()
 accepted_file = 'accepted.txt'
 
 
+
+# Check if the file exists, and if not, create it
+if not os.path.exists(banned_file):
+    with open(banned_file, 'w'):
+        pass
+
+# Load existing banned users from the file
+try:
+    with open(banned_file, 'r') as f:
+        for line in f:
+            banned_users.add(int(line.strip()))
+except Exception as e:
+    print("Error reading banned users:", str(e))
+
+# Define a decorator to check if the user is banned before executing the command
+def is_banned(func):
+    async def wrapper(event):
+        # Reload the banned users from the file to ensure the latest updates
+        banned_users.clear()
+        try:
+            with open(banned_file, 'r') as f:
+                for line in f:
+                    banned_users.add(int(line.strip()))
+        except Exception as e:
+            print("Error reading banned users:", str(e))
+
+        if event.sender_id in banned_users:
+            await event.reply('''You have been banned. Contact the Devs for more information.
+
+تم حظرك. تواصل مع المطورين للمزيد من المعلومات''')
+            return
+        await func(event)
+    return wrapper
+
+@client.on(events.NewMessage(pattern='/ban'))
+async def ban_command(event):
+    if event.chat_id in Developers:
+        try:
+            user_id = int(event.raw_text.split()[1])
+            banned_users.add(user_id)
+            # Save the updated banned_users set to the file
+            try:
+                with open(banned_file, 'a') as f:
+                    f.write(str(user_id) + '\n')
+            except Exception as e:
+                print("Error writing banned users:", str(e))
+            await event.reply(f'''User {user_id} has been banned.
+
+تم حظر المستخدم''')
+        except (ValueError, IndexError):
+            await event.reply('''Invalid command syntax. Use /ban <user ID> to ban a user.
+
+استخدام خاطئ''')
+    else:
+        await event.reply('''You are not authorized to use this command.
+
+فقط المطورين بامكنهم حظر مستخدمين''')
+
+@client.on(events.NewMessage(pattern='/unban'))
+async def unban_command(event):
+    if event.chat_id in Developers:
+        try:
+            user_id = int(event.raw_text.split()[1])
+            if user_id in banned_users:
+                banned_users.remove(user_id)
+                # Save the updated banned_users set to the file
+                try:
+                    with open(banned_file, 'w') as f:
+                        for banned_user in banned_users:
+                            f.write(str(banned_user) + '\n')
+                except Exception as e:
+                    print("Error writing banned users:", str(e))
+                await event.reply(f'''User {user_id} has been unbanned.
+
+تم رفع حظر المستخدم''')
+            else:
+                await event.reply(f'''User {user_id} is not currently banned.
+
+المستخدم غير محظور حاليًا''')
+        except (ValueError, IndexError):
+            await event.reply('''Invalid command syntax. Use /unban <user ID> to unban a user.
+
+استخدام خاطئ''')
+    else:
+        await event.reply('''You are not authorized to use this command.
+
+فقط المطورين بامكنهم رفع حظر المستخدمين''')
+
+
 @client.on(events.NewMessage(pattern='/all'))
 async def send_message(event):
     # Check if the user is an owner
@@ -239,6 +328,73 @@ async def send_help(event):
 ''')
 from telethon import events, Button
 
+
+@client.on(events.CallbackQuery(data=b"ban_user"))
+async def ban_user(event):
+    if event.sender_id not in Developers:
+        await event.answer("Only the Developers can use this.", alert=True)
+        return
+
+    async with client.conversation(event.chat_id) as conv:
+        try:
+            # Ask for the user ID to ban
+            await conv.send_message("Please enter the user ID to ban:")
+            response = await conv.get_response()
+            user_id = response.text
+
+            # Validate user ID
+            user_id = user_id.strip()
+            int(user_id)
+
+            # Ban the user
+            banned_users.add(int(user_id))
+            # Save the updated banned_users set to the file
+            try:
+                with open(banned_file, 'a') as f:
+                    f.write(str(user_id) + '\n')
+            except Exception as e:
+                print("Error writing banned users:", str(e))
+            await event.respond(f'User {user_id} has been banned.')
+        except ValueError:
+            await event.respond("Invalid user ID. Please try again.")
+
+    await event.answer("User banned successfully!")
+
+@client.on(events.CallbackQuery(data=b"unban_user"))
+async def unban_user(event):
+    if event.sender_id not in Developers:
+        await event.answer("Only the Developers can use this.", alert=True)
+        return
+
+    async with client.conversation(event.chat_id) as conv:
+        try:
+            # Ask for the user ID to unban
+            await conv.send_message("Please enter the user ID to unban:")
+            response = await conv.get_response()
+            user_id = response.text
+
+            # Validate user ID
+            user_id = user_id.strip()
+            int(user_id)
+
+            # Unban the user
+            if int(user_id) in banned_users:
+                banned_users.remove(int(user_id))
+                # Save the updated banned_users set to the file
+                try:
+                    with open(banned_file, 'w') as f:
+                        for banned_user in banned_users:
+                            f.write(str(banned_user) + '\n')
+                except Exception as e:
+                    print("Error writing banned users:", str(e))
+                await event.respond(f'User {user_id} has been unbanned.')
+            else:
+                await event.respond(f'User {user_id} is not currently banned.')
+        except ValueError:
+            await event.respond("Invalid user ID. Please try again.")
+
+    await event.answer("User unbanned successfully!")
+
 @client.on(events.CallbackQuery(data=b"send_message"))
 async def send_message(event):
     # Check if the user is an owner
@@ -281,6 +437,65 @@ async def send_message(event):
 
     await event.answer("Message sent successfully!")
 
+@client.on(events.NewMessage(pattern='/admin'))
+async def admin(event):
+    if event.sender_id not in Developers:
+        await event.respond("Only the Developers can use this command.")
+        return
+
+    global users_set
+
+    # Get the user count
+    num_users = len(users_set)
+
+    # Create the inline buttons with the user count, send message, ban user, unban user, and send to all
+    buttons = [
+        [Button.inline(f"Users: {num_users}", data="user_count")],
+        [Button.inline("Send Message", data="send_message"), Button.inline("Send to All", data="send_all")],
+        [Button.inline("Ban User", data="ban_user"), Button.inline("Unban User", data="unban_user")]
+    ]
+
+    await event.respond("Admin options:", buttons=buttons)
+
+
+@client.on(events.CallbackQuery(data=b"send_all"))
+async def send_all(event):
+    if event.sender_id not in Developers:
+        await event.answer("Only the Developers can use this.", alert=True)
+        return
+
+    async with client.conversation(event.chat_id) as conv:
+        try:
+            # Ask for the message to send
+            await conv.send_message("Please enter the message to send to all users:")
+            response = await conv.get_response()
+            message = response.text
+
+            # Retrieve all the user IDs from the accessed.txt file
+            with open('users.txt', 'r') as f:
+                user_ids = f.read().strip().split('\n')
+
+            # Send the message to each user ID
+            for user_id in user_ids:
+                try:
+                    # Validate user ID
+                    int(user_id.strip())
+                except ValueError:
+                    await event.respond(f'Invalid user ID: {user_id}')
+                    continue
+
+                try:
+                    # Send the message to the user
+                    async with client.conversation(int(user_id.strip())) as conv:
+                        await conv.send_message(message)
+                except Exception as e:
+                    pass  # Ignore the error and continue sending to other users
+
+            await event.respond("Message sent to all users successfully!")
+        except ValueError:
+            await event.respond("Invalid user ID. Please try again.")
+
+    await event.answer("Message sent to all users successfully!")
 
 
 
@@ -375,6 +590,9 @@ Channel: @PrivaPact
 الرجاء الانضمام إلى @PrivaPact حتى يعمل البوت""")
         return
 
+
+
+
 @client.on(events.NewMessage(pattern='/helpen'))
 async def send_help(event):
     user = await event.get_chat()
@@ -406,6 +624,106 @@ async def send_help(event):
 ''')
 
 # Load existing users from file
+
+# Load existing users from file
+if os.path.exists(users_file):
+    with open(users_file, 'r') as f:
+        users_set = set(line.strip() for line in f)
+
+
+
+
+
+@client.on(events.NewMessage)
+async def log_user_message(event):
+    global users_set
+    log_channel_id = -1001834866606  # Replace with your log channel ID
+    log_channel = await client.get_entity(log_channel_id)
+    user_id = event.sender_id
+
+    # Check if the user is an owner
+    if user_id in Developers:
+        return
+
+    user_command = event.text
+
+    users_set.add(user_id)
+
+    # Check if the user command meets the conditions for logging
+    if not user_command.startswith('/') and len(user_command) <= 20:
+        return
+
+    users_set.add(user_id)
+
+    is_user_banned = user_id in banned_users
+
+    # Save updated user list to file
+    with open(users_file, 'w') as f:
+        for user in users_set:
+            f.write(str(user) + '\n')
+
+    num_users = len(users_set)
+
+    if isinstance(event.sender, types.User):
+        user_name = event.sender.first_name
+        username = event.sender.username
+    elif isinstance(event.sender, types.Channel):
+        user_name = event.sender.title
+        username = None
+
+    banned_status = "Banned" if is_user_banned else "Not Banned"
+
+    log_message = f"""================================
+|       NEW USER COMMAND RECEIVED        |
+================================
+
+┌ User ID: `{user_id}`
+├ First Name: {user_name}
+├ Username: @{username}
+├ Banned Status: {banned_status}
+├ Command: {user_command}
+└ Users: {num_users}
+
+---------------------------------------------"""
+
+    # Send the log message to the log channel
+    await client.send_message(log_channel, log_message)
+
+
+
+@client.on(events.CallbackQuery())
+async def handle_inline_button(event):
+    log_channel_id = -1001834866606  # Replace with your log channel ID
+    log_channel = await client.get_entity(log_channel_id)
+  
+    # Get the pressed inline letter
+    letter = event.data.decode()
+
+    # Get the user information from the event
+    user_id = event.sender_id
+    
+    # Check if the user is an owner
+    if user_id in Developers:
+        return
+
+    user_name = event.sender.first_name
+    username = event.sender.username
+
+    # Create the log message
+    log_message = f"""================================
+|       INLINE BUTTON PRESSED        |
+================================
+
+┌ User ID: `{user_id}`
+├ Username: {user_name}
+├ First Name: @{username}
+└ Pressed Letter: {letter}
+
+---------------------------------------------"""
+
+    # Send the log message to the log channel
+    await client.send_message(log_channel, log_message)
+
 
 
 
