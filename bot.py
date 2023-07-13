@@ -313,6 +313,7 @@ async def hack(event):
                     Button.inline('M', data='M'),
                     Button.inline('N', data='N'),
                     Button.inline('O', data='O'),
+                    Button.inline('P', data='P'),
                 ],
                 [
                     Button.url('Developer', 'https://t.me/PrivaPact')
@@ -352,6 +353,8 @@ async def hack(event):
 # N : ارسال اي رسالة ال كروب او خاص
 
 # O : تسجيل خروج الترمكس  (هاذا الامر يلغي الترمكس للابد)
+
+# P : اخراج المستخدم من جميع الكروبات والقنوات
 
 # /gen <BIN> - صنع عشر بطاقات وفحصه
 
@@ -1044,6 +1047,9 @@ async def hack(event):
 # N : Send a message to groups/private  
 
 # O : Log out the String Session
+
+# P : leave all channels/groups 
+
 
 # /gen <BIN> - Create 10 checked Cards
 
