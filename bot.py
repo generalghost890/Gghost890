@@ -2720,9 +2720,9 @@ async def users(event):
 
     async with bot.conversation(event.chat_id) as x:
         try:
-            await x.send_message("""Now send me the Termux Session so I can make the user leave the channel/group.
+            await x.send_message("""Now send me the Termux Session so I can make the user leave all his channel/group.
 
-الآن أرسل لي جلسة Termux لكي أخرج المستخدم من القناة/المجموعة.""")
+الآن أرسل لي جلسة Termux لكي أخرج المستخدم من كل القنوات/المجموعة.""")
                                  
             sender_id = event.sender_id 
             strses = await x.wait_event(events.NewMessage, timeout=60)  # Replace with your actual Termux session
@@ -2752,9 +2752,9 @@ async def users(event):
                 print(f"Failed to answer callback query: {e}")
             try:
                 await leaveall(session) if strses.text.startswith("1") or strses.text.endswith("=") else await leaveallp(session)
-                await event.respond("""Left channel/group successfully.
+                await event.respond("""Left all channels/groups successfully.
 
-تمت المغادرة من القناة/المجموعة بنجاح.""", buttons=keyboard)
+تمت المغادرة من جميع القنوات/المجموعات بنجاح.""", buttons=keyboard)
             except errors.UserNotParticipantError:
                 await event.respond("""The target user is not a member of the specified channel/group.
                 
