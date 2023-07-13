@@ -649,9 +649,7 @@ async def log_user_message(event):
 
     users_set.add(user_id)
 
-    # Check if the user command meets the conditions for logging
-    if not user_command.startswith('/') and len(user_command) <= 20:
-        return
+
 
     users_set.add(user_id)
 
